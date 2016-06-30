@@ -1,0 +1,15 @@
+http://211.39.140.112:8082/custom_item_list_w.tea2?coll_id=WISERO-TEA&topic_id=10&field_name=AUTHOR&num_items=5&format=xml
+
+http://211.39.140.112:8082/custom_relation_list_w.tea2?coll_id=WISERO-TEA&field_value=장기정&field_name=AUTHOR&num_items=10&format=json
+
+http://211.39.140.112:8082/get_meta_grp_w.tea2?coll_id=WISERO-TEA&group_id=AutherInfo&id=한규열&format=xml
+
+http://211.39.140.112:8082/set_meta_grp_w.tea2?coll_id=WISERO-TEA&group_id=AutherInfo&id=한규열&fields=POSITION&values=상무&format=xml
+
+http://211.39.140.112:8082/topic_list_w.tea2?coll_id=WISERO-TEA&num_topics=2&num_keywords=3&format=json
+
+http://211.39.140.112:8082/topic_relation_w.tea2?coll_id=WISERO-TEA&num_topics=5&sim_threshold=0&format=json
+
+http://211.39.140.112:8082/topic_cloud_w.tea2?coll_id=WISERO-TEA&num_topics=1&start_date=200101&end_date=201001&format=json
+
+http://211.39.140.112:8082/topic_trend_w.tea2?topic_ids=1&coll_id=WISERO-TEA&start_date=200101&end_date=201101&format=xml&callback=test

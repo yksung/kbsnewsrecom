@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<classpath>
+	<classpathentry kind="src" path="src"/>
+	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER/org.eclipse.jdt.internal.debug.ui.launcher.StandardVMType/jdk1.6.0_45"/>
+	<classpathentry kind="con" path="org.eclipse.jst.j2ee.internal.module.container"/>
+	<classpathentry kind="lib" path="D:/project/JAVA_Project_Folder/wisetea-v2-java/lib/commons-lang3-3.1.jar"/>
+	<classpathentry kind="lib" path="D:/wisenut/test/sf1-v5.3/lib/queryapi530.jar"/>
+	<classpathentry kind="output" path="classes"/>
+</classpath>

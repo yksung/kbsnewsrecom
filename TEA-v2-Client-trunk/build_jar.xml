@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<project name="WISE TEA v2.x Client Java API to JAR archiving" default="build.jar.all">
+	<property file="build_jar.properties"/>
+	<property name="jar.file.name" value="${api.name}-v${api.version}.jar"/>
+		
+	<patternset id="target.jar">
+		<include name="**${jar.file.name}"/>
+	</patternset>
+
+	<patternset id="source">
+		<exclude name="**/tests/**.java"/>
+		<exclude name="**/ex/**.java"/>
+		<exclude name="**/tools/GraphRunner.java"/>
+		<include name="**/**.java"/>
+	</patternset>
+	
+	<patternset id="library">
+		<include name="**/**.jar"/>
+	</patternset>
+
+	<!-- Cleaning working directory -->
+	<target name="clean">
+		<delete dir="${working.home}"/>
+	</target>
+
+	<!-- Preparing directory structure -->
+	<target name="prepare" depends="clean">
+		<mkdir dir="${working.home}"/>
+		<mkdir dir="${working.src}"/>
+		<mkdir dir="${working.classes}"/>
+		<mkdir dir="${working.lib}"/>
+		
+		<tstamp>
+            <format property="build.date" pattern="yyyy.MM.dd"/>
+            <format property="build.time" pattern="HH:mm:ss"/>
+        </tstamp>
+        <property name="builddate" value="${build.date} ${build.time}"/>
+	</target>
+
+	<!-- Copy needs resources to compiling -->
+	<target name="copy.resource" depends="prepare">
+		<copy todir="${working.src}">
+			<fileset dir="${api.src}">
+				<patternset refid="source"/>
+				<type type="file"/>
+			</fileset>
+		</copy>
+		
+		<copy todir="${working.lib}">
+			<fileset dir="${api.lib}">
+				<patternset refid="library"/>
+				<type type="file"/>
+			</fileset>
+		</copy>
+	</target>
+
+    <!-- Compiling source -->
+	<target name="source.compile" depends="copy.resource">
+		<javac encoding="${compile.encoding}" srcdir="${working.src}" destdir="${working.classes}" debug="true" debuglevel="lines,vars,source" includeantruntime="false">
+			<classpath>
+				<fileset dir="${working.lib}">
+					<include name="**/**.jar"/>
+				</fileset>
+			</classpath>
+		</javac>
+
+		<!-- Make JAR -->
+		<jar jarfile="${working.home}/${jar.file.name}" basedir="${working.classes}">
+			<manifest>
+				<attribute name="Built-By" value="${mf.builtby}"/>
+				<attribute name="Release-Date" value="${builddate}"/>
+			</manifest>
+		</jar>
+	</target>
+
+	<target name="send.project">
+		<property name="target.file" value="${working.home}\${jar.file.name}"/>
+		<property name="to.dir" value="D:\ApplicationDev\TEA\tea2-trunk\src\main\webapp\WEB-INF\lib"/>
+		<echo message="Objective file : ${target.file}" />
+		<echo message="Target directory : ${to.dir}" />
+
+		<copy todir="${to.dir}">
+			<fileset dir="${working.home}">
+				<patternset refid="target.jar"/>
+				<type type="file"/>
+			</fileset>
+		</copy>
+	</target>
+
+	<!-- Clean all directory to build jar -->
+	<target name="complete.clean">
+		<delete dir="${working.src}"/>
+		<delete dir="${working.classes}"/>
+		<delete dir="${working.lib}"/>
+	</target>
+
+	<target name="build.jar.all" depends="source.compile, send.project, complete.clean"/>
+</project>

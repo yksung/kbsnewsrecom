@@ -1,0 +1,69 @@
+apply plugin: 'java'
+apply plugin: 'eclipse-wtp'
+apply plugin: 'idea'
+
+
+defaultTasks 'build'
+
+sourceCompatibility = 1.5
+targetCompatibility = 1.5
+
+archivesBaseName = 'wisetea'
+version = 'v2.5.1'
+println archivesBaseName + ' wisetea client library ' + version + ' building...'
+
+sourceSets.main.java.srcDir 'src'
+//sourceSets.main.resources.srcDir 'resources'
+//sourceSets.test.java.srcDir 'src/test'
+//sourceSets.test.resources.srcDir 'resources'
+
+def defaultEncoding = 'UTF-8' // source encoding
+compileJava.options.encoding = defaultEncoding
+compileTestJava.options.encoding = defaultEncoding
+compileJava.options.fork(memoryMaximumSize: '512m')
+compileTestJava.options.fork(memoryMaximumSize: '512m')
+
+
+repositories {
+    mavenCentral()
+    flatDir name: 'localRepository', dirs: 'lib'
+}
+
+def compileLib = fileTree(dir: 'lib', include: "*.jar")
+def testLib = fileTree(dir: 'testlib', include: "*.jar")
+
+dependencies {
+    compile compileLib
+    //testCompile 'junit:junit:4.8.2'
+    testCompile testLib
+}
+
+
+jar {
+    appendix=''
+    classifier = ''
+    manifest {
+        attributes 'Implementation-Title': 'WISETEA',
+                'Implementation-Version': version
+    }
+
+    from sourceSets.main.output
+    //from { configurations.runtime.collect { it.isDirectory() ? it : zipTree(it) } }
+}
+
+///////////////////////////////////////////////////////////////////////////////
+// jar 생성방법
+//
+// gradle을 설치하고
+// build.gradle 파일이 있는 위치에서
+// $> gradle jar 을 실행한다.
+//
+// 생성 결과 파일 위치
+// build/libs/wisetea-v2.5.0.jar
+//
+///////////////////////////////////////////////////////////////////////////////
+
+task deploy(type:Copy) {
+    from ('build/libs')
+    into ('C:\\DOCUMENTS\\tea2\\src\\main\\webapp\\WEB-INF\\lib') include ('wisetea-'+version+'.jar')
+}
