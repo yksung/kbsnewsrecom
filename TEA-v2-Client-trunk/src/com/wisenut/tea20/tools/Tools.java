@@ -362,6 +362,35 @@ public class Tools {
 
 		return toReturn;
 	}
+	
+	public static List<Pair<String>> getPairListString(String obj, String itemDelimiter, String valueDelimiter) {
+		List<Pair<String>> toReturn = new ArrayList<Pair<String>>();
+		if (null == obj || 0 == obj.length() || null == itemDelimiter || 1 != itemDelimiter.length() || null == valueDelimiter
+				|| 1 != valueDelimiter.length()) {
+			return toReturn;
+		}
+
+		StringTokenizer tokenizer = new StringTokenizer(obj, itemDelimiter);
+		while (tokenizer.hasMoreTokens()) {
+			String item = tokenizer.nextToken();
+			
+			//it's import to retain position, so I'll pad with empty element
+			if (null == item || 0 == item.length()) {
+				toReturn.add(new Pair<String>("", ""));
+				continue;
+			}
+			StringTokenizer valueTokenizer = new StringTokenizer(item, valueDelimiter);
+			String key = valueTokenizer.nextToken();
+			String value = "";
+
+			if (valueTokenizer.hasMoreTokens()) {
+				value = valueTokenizer.nextToken();
+			}
+			toReturn.add(new Pair<String>(key, value));
+		}
+
+		return toReturn;
+	}
 
 	public static boolean isEqualSet(String[] set1, String[] set2) {
 		if (null == set1 && null == set2) {
@@ -433,7 +462,7 @@ public class Tools {
 	}
 
 	/**
-	 * ë°°ì—´ì˜ ì•„ì´í…œì„ êµ¬ë¶„ìë¡œ ì—®ì€ í•˜ë‚˜ì˜ ë¬¸ìì—´ë¡œ ë³€í™˜
+	 * ¹è¿­ÀÇ ¾ÆÀÌÅÛÀ» ±¸ºĞÀÚ·Î ¿«Àº ÇÏ³ªÀÇ ¹®ÀÚ¿­·Î º¯È¯
 	 * @param items
 	 * @param delimiter
 	 * @return
@@ -454,7 +483,7 @@ public class Tools {
 	}
 
 	/**
-	 * ì„œë²„ì—ì„œ ë°›ì€ ì—°ê´€í‚¤ì›Œë“œ ëª©ë¡ ë¬¸ìì—´ì„ êµ¬ë¶„ìë¥¼ ì‚¬ìš©í•´ Pair ëª©ë¡ìœ¼ë¡œ ë³€í™˜
+	 * ¼­¹ö¿¡¼­ ¹ŞÀº ¿¬°üÅ°¿öµå ¸ñ·Ï ¹®ÀÚ¿­À» ±¸ºĞÀÚ¸¦ »ç¿ëÇØ Pair ¸ñ·ÏÀ¸·Î º¯È¯
 	 * @param source
 	 * @param itemDelimiter
 	 * @param valueDelimiter
@@ -499,7 +528,7 @@ public class Tools {
 	}
 
 	/**
-	 * ë¬¸ìì—´ì´ í¬í•¨í•˜ê³  ìˆëŠ” êµ¬ë¶„ìë¥¼ ë‹¤ë¥¸ êµ¬ë¶„ìë¡œ ë³€ê²½
+	 * ¹®ÀÚ¿­ÀÌ Æ÷ÇÔÇÏ°í ÀÖ´Â ±¸ºĞÀÚ¸¦ ´Ù¸¥ ±¸ºĞÀÚ·Î º¯°æ
 	 * @param source
 	 * @param fromDelimiter
 	 * @param toDelimiter

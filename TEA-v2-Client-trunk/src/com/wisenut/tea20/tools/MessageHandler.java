@@ -19,8 +19,8 @@ import com.wisenut.tea20.types.*;
  *
  */
 public class MessageHandler {
-	final int INIT_CONNECTION_INTERVAL = 500;
-	final int MAX_CONNECTION_INTERVAL = 500;
+	final int INIT_CONNECTION_INTERVAL = 10000;
+	final int MAX_CONNECTION_INTERVAL = 10000;
 	final int MAX_BUFFER_SIZE = 1024;
 	final int OUT_MESSAGE_HEADER_SIZE = 12;
 	final int IN_MESSAGE_HEADER_SIZE = 10;
