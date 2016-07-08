@@ -799,8 +799,9 @@ public class TeaClient {
         return toReturn;
     }
     
-    /*public List<Pair<Integer>> extractNerForPlainText(String collectionId, String content, ) {
-        List<Pair<Integer>> toReturn = new ArrayList<Pair<Integer>>();
+    //public List<Pair<Double>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> resultList, String prefix ) {
+    public Map<String, Map<String,String>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, ArrayList<String> resultList, String prefix ) {
+    	Map<String, Map<String,String>> toReturn = new HashMap<String, Map<String,String>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
             setError("APIL_0100", "argument's not valid.");
             return toReturn;
@@ -811,31 +812,115 @@ public class TeaClient {
             return toReturn;
         }
 
-        String[] paramFields = {"collection_id", "content", "similarContent", "item_delimiter", "weight_delimiter" };
-        SocketMessage request = new SocketMessage("recommender", "get_named_entity", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
+        String filter_docId = "";
+        
+        Iterator<String> docList = resultList.iterator();
+        while (docList.hasNext()) {
+        	filter_docId += docList.next() + ITEM_DELIMITER;
+        }
+        
+        String[] paramFields = {"collection_id", "target_field", "content", "content_field", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix" };
+        SocketMessage request = new SocketMessage("recommender", "get_similar_doc_with_content", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
+        request.setValue("target_field", "TERMS");
         request.setValue("content", content);
-        request.setValue("similarContent", similarContent);
+        request.setValue("content_field", content_field);
+        request.setValue("field_delimiter", FIELD_DELIMITER);
         request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("weight_delimiter", WEIGHT_DELIMITER);
-
-
+        request.setValue("value_delimiter", VALUE_DELIMITER);
+        request.setValue("top_count", topN);
+        
+        request.setValue("filter_docId", filter_docId);
+        request.setValue("filter_prefix", prefix);
+        
         SocketMessage response = handleMessage(request);
         if (!isSuccessful(response)) {
             if ("".equals(response.getErrorCode())) {
-                setError("APIL_0271", "ner extraction wasn't successful: coll_id=" + collectionId);
+                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
             } else {
-                wrapError("APIL_0271", "ner extraction wasn't successful: coll_id=" + collectionId);
+                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
+            }
+        } else {
+            String keywordsString = response.getValue("similar_doc").trim();
+            String contentString = response.getValue("similar_content").trim();
+            
+            List<Pair<Double>> similarDocumentList = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
+            List<Map<String,String>> contentMapList = Tools.getMapListString(content_field, contentString, "/", VALUE_DELIMITER, ITEM_DELIMITER, FIELD_DELIMITER);
+            
+            for(int i=0; i<similarDocumentList.size(); i++){
+            	toReturn.put(similarDocumentList.get(i).key(), contentMapList.get(i));
+            }
+        	
+            //similarDocumentContentList = Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER);
+            /*List<Pair<String>> tempContentList =  Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER);
+        	for (int i = 0; i < tempContentList.size(); i++) {
+     			Pair<String> item = tempContentList.get(i);
+     			if (null == item) {
+     				continue;
+     			}
+     			//System.out.println( item.key() + "^" + item.value() );
+     			similarDocumentContentList.add(item);
+     		} */
+
+        }
+        return toReturn;
+    }
+    
+    /**
+     * Request keywords extraction. (PlainText)
+     *
+     * @param collectionId	target collection ID
+     * @param content	texts to extract keywords.
+     * @param targetField	field name for keyword extraction in server's configuration
+     * @return wrapper object for keyword-weight pairs
+     */
+    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, String prefix ) {
+        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
+        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
+            setError("APIL_0100", "argument's not valid.");
+            return toReturn;
+        }
+
+        if (content.length() > MAX_CONTENT_SIZE) {
+            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
+            return toReturn;
+        }
+
+        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_prefix" };
+        SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
+                paramFields);
+        request.setValue("collection_id", collectionId);
+        request.setValue("target_field", "TERMS");
+        request.setValue("content", content);
+        request.setValue("field_delimiter", FIELD_DELIMITER);
+        request.setValue("item_delimiter", ITEM_DELIMITER);
+        request.setValue("value_delimiter", VALUE_DELIMITER);
+        request.setValue("top_count", topN);
+        request.setValue("filter_prefix", prefix);
+        
+        SocketMessage response = handleMessage(request);
+        if (!isSuccessful(response)) {
+            if ("".equals(response.getErrorCode())) {
+                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
+            } else {
+                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
             }
         } else {
             //public static List< Pair<String> > getPairListStr(String obj, String itemDelimiter, String valueDelimiter)
-            String keywordsString = response.getValue("ner").trim();
-            toReturn = Tools.getPairListInt(keywordsString, ITEM_DELIMITER, WEIGHT_DELIMITER);
+            String keywordsString = response.getValue("similar_doc").trim();
+            toReturn = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
         }
         return toReturn;
-    }*/
-    
+    }
+    /**
+     * Request keywords extraction. (PlainText)
+     *
+     * @param collectionId	target collection ID
+     * @param content	texts to extract keywords.
+     * @param targetField	field name for keyword extraction in server's configuration
+     * @return wrapper object for keyword-weight pairs
+     */
     public List<Pair<Integer>> extractNerForPlainText(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix  ) {
         List<Pair<Integer>> toReturn = new ArrayList<Pair<Integer>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
@@ -885,110 +970,26 @@ public class TeaClient {
         return toReturn;
     }
     
-    /**
-     * Request keywords extraction. (PlainText)
-     *
-     * @param collectionId	target collection ID
-     * @param content	texts to extract keywords.
-     * @param targetField	field name for keyword extraction in server's configuration
-     * @return wrapper object for keyword-weight pairs
-     */
-    /*public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN) {
-        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
-        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
-            setError("APIL_0100", "argument's not valid.");
-            return toReturn;
-        }
-
-        if (content.length() > MAX_CONTENT_SIZE) {
-            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
-            return toReturn;
-        }
-
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "topn" };
-        SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
-                paramFields);
-        request.setValue("collection_id", collectionId);
-        request.setValue("target_field", "TERMS");
-        request.setValue("content", content);
-        request.setValue("field_delimiter", FIELD_DELIMITER);
-        request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("value_delimiter", VALUE_DELIMITER);
-        request.setValue("topn", topN);
-        
-        SocketMessage response = handleMessage(request);
-        if (!isSuccessful(response)) {
-            if ("".equals(response.getErrorCode())) {
-                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
-            } else {
-                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
-            }
-        } else {
-            //public static List< Pair<String> > getPairListStr(String obj, String itemDelimiter, String valueDelimiter)
-            String keywordsString = response.getValue("similar_doc").trim();
-            toReturn = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
-        }
-        return toReturn;
-    }*/
-    
-    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, String prefix ) {
-        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
-        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
-            setError("APIL_0100", "argument's not valid.");
-            return toReturn;
-        }
-
-        if (content.length() > MAX_CONTENT_SIZE) {
-            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
-            return toReturn;
-        }
-
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_prefix" };
-        SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
-                paramFields);
-        request.setValue("collection_id", collectionId);
-        request.setValue("target_field", "TERMS");
-        request.setValue("content", content);
-        request.setValue("field_delimiter", FIELD_DELIMITER);
-        request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("value_delimiter", VALUE_DELIMITER);
-        request.setValue("top_count", topN);
-        request.setValue("filter_prefix", prefix);
-        
-        SocketMessage response = handleMessage(request);
-        if (!isSuccessful(response)) {
-            if ("".equals(response.getErrorCode())) {
-                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
-            } else {
-                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
-            }
-        } else {
-            //public static List< Pair<String> > getPairListStr(String obj, String itemDelimiter, String valueDelimiter)
-            String keywordsString = response.getValue("similar_doc").trim();
-            toReturn = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
-        }
-        return toReturn;
-    }
-    
-    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix  ) {
-    	List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
-        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
-            setError("APIL_0100", "argument's not valid.");
-            return toReturn;
-        }
-
-        if (content.length() > MAX_CONTENT_SIZE) {
-            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
-            return toReturn;
-        }
-        
-        String filter_docId = "";
-        
-        Iterator<String> docList = resultList.iterator();
+    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, ArrayList<String> docListForFiltering, String prefix  ) {
+    	
+    	String filter_docId = "";
+    	  	
+        Iterator<String> docList = docListForFiltering.iterator();
         while (docList.hasNext()) {
         	filter_docId += docList.next() + ITEM_DELIMITER;
         }
-        
+    	
+    	
+        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
+        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
+            setError("APIL_0100", "argument's not valid.");
+            return toReturn;
+        }
+
+        if (content.length() > MAX_CONTENT_SIZE) {
+            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
+            return toReturn;
+        }
 
         String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "topn", "filter_docId", "filter_prefix" };
         SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
@@ -1000,7 +1001,7 @@ public class TeaClient {
         request.setValue("value_delimiter", VALUE_DELIMITER);
         request.setValue("item_delimiter", ITEM_DELIMITER);
         request.setValue("topn", topN);
-        request.setValue("filter_docId", filter_docId);
+        request.setValue("filter_docId", filter_docId );
         request.setValue("filter_prefix", prefix);
                 
         SocketMessage response = handleMessage(request);
@@ -1017,134 +1018,6 @@ public class TeaClient {
         }
         return toReturn;
     }
-    
-    public List<Pair<Double>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> resultList, String prefix ) {
-        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
-        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
-            setError("APIL_0100", "argument's not valid.");
-            return toReturn;
-        }
-
-        if (content.length() > MAX_CONTENT_SIZE) {
-            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
-            return toReturn;
-        }
-
-        String filter_docId = "";
-        
-        Iterator<String> docList = resultList.iterator();
-        while (docList.hasNext()) {
-        	filter_docId += docList.next() + ITEM_DELIMITER;
-        }
-        
-        String[] paramFields = {"collection_id", "target_field", "content", "content_field", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix" };
-        SocketMessage request = new SocketMessage("recommender", "get_similar_doc_with_content", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
-                paramFields);
-        request.setValue("collection_id", collectionId);
-        request.setValue("target_field", "TERMS");
-        request.setValue("content", content);
-        request.setValue("content_field", content_field);
-        request.setValue("field_delimiter", FIELD_DELIMITER);
-        request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("value_delimiter", VALUE_DELIMITER);
-        request.setValue("top_count", topN);
-        
-        request.setValue("filter_docId", filter_docId);
-        request.setValue("filter_prefix", prefix);
-        
-        SocketMessage response = handleMessage(request);
-        if (!isSuccessful(response)) {
-            if ("".equals(response.getErrorCode())) {
-                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
-            } else {
-                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
-            }
-        } else {
-            //public static List< Pair<String> > getPairListStr(String obj, String itemDelimiter, String valueDelimiter)
-            String keywordsString = response.getValue("similar_doc").trim();            
-            String contentString = response.getValue("similar_content").trim();
-            
-            for (int i = 0; i <  Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER).size(); i++) {
-     			Pair<Double> item = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER).get(i);
-     			if (null == item) {
-     				continue;
-     			}
-     			similarDocumentList.add(item);
-     			//System.out.println( item.key() + "^" + item.value() );
-     		}    
-        	
-        	for (int i = 0; i < Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER).size(); i++) {
-     			Pair<String> item = Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER).get(i);
-     			if (null == item) {
-     				continue;
-     			}
-     			similarDocumentContentList.add(item);
-     			//System.out.println( item.key() + "^" + item.value() );
-     		} 
-
-        }
-        return toReturn;
-    }
-    
-    /*public List<Pair<Double>> getSimilarDocSf1(String collectionId, String content, String topN, ArrayList<String> resultList ) {
-    	
-    	String docidSf1 = "";
-    	  	
-    	
-        Iterator<String> docList = resultList.iterator();
-        while (docList.hasNext()) {
-        	docidSf1 += docList.next() + ITEM_DELIMITER;
-        }
-        
-        for (int i = 0; i < resultList.size(); i++) {
-         	String item = resultList.get(i);
- 			if (null == item) {
- 				continue;
- 			}
- 			 			
- 			if( docidSf1.length() != 0 )
- 				docidSf1 += "|";
- 			
- 			docidSf1 += item;
- 		}                     	
-    	
-        List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
-        if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
-            setError("APIL_0100", "argument's not valid.");
-            return toReturn;
-        }
-
-        if (content.length() > MAX_CONTENT_SIZE) {
-            setError("APIL_0153", "content size cannot exceed " + MAX_CONTENT_SIZE + " characters: " + content.length());
-            return toReturn;
-        }
-
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "topn", "docid_sf1" };
-        SocketMessage request = new SocketMessage("recommender", "get_similar_doc_sf1", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
-                paramFields);
-        request.setValue("collection_id", collectionId);
-        request.setValue("target_field", "TERMS_KMA");
-        request.setValue("content", content);
-        request.setValue("field_delimiter", FIELD_DELIMITER);
-        request.setValue("value_delimiter", VALUE_DELIMITER);
-        request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("topn", topN);
-        request.setValue("docid_sf1", docidSf1);
-                
-        SocketMessage response = handleMessage(request);
-        if (!isSuccessful(response)) {
-            if ("".equals(response.getErrorCode())) {
-                setError("APIL_0271", "get similar Documents wasn't successful: coll_id=" + collectionId);
-            } else {
-                wrapError("APIL_0271", "get similar Documents (realtime) wasn't successful: coll_id=" + collectionId);
-            }
-        } else {
-            //public static List< Pair<String> > getPairListStr(String obj, String itemDelimiter, String valueDelimiter)
-            String keywordsString = response.getValue("similar_doc").trim();
-            toReturn = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
-        }
-        return toReturn;
-    }*/
     
     /**
      * Request keywords extraction. (realtime)
@@ -4443,3 +4316,4 @@ public class TeaClient {
         return result;
     }
 }
+

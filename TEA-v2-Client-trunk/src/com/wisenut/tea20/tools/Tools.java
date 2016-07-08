@@ -3,6 +3,7 @@ package com.wisenut.tea20.tools;
 import java.net.InetAddress;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Pattern;
 
 import com.wisenut.tea20.types.*;
 
@@ -362,7 +363,7 @@ public class Tools {
 
 		return toReturn;
 	}
-	
+
 	public static List<Pair<String>> getPairListString(String obj, String itemDelimiter, String valueDelimiter) {
 		List<Pair<String>> toReturn = new ArrayList<Pair<String>>();
 		if (null == obj || 0 == obj.length() || null == itemDelimiter || 1 != itemDelimiter.length() || null == valueDelimiter
@@ -391,7 +392,33 @@ public class Tools {
 
 		return toReturn;
 	}
+	
+	public static List<Map<String,String>> getMapListString(String fields, String contents, String lengthDelimiter, String valueDelimiter, String itemDelimiter, String fieldDelimiter) {
+		List<Map<String,String>> toReturn = new ArrayList<Map<String,String>>();
+		
+		String lengthRemovedFields = joinExclude(fields, lengthDelimiter, fieldDelimiter);
+		StringTokenizer tokenizer = new StringTokenizer(lengthRemovedFields, fieldDelimiter);
+		String[] fieldsArr = new String[tokenizer.countTokens()];
+		for(int i=0; i<fieldsArr.length; i++){
+			fieldsArr[i] = tokenizer.nextToken();
+		}
+		
+		StringTokenizer itemTokenizer = new StringTokenizer(contents, itemDelimiter);
+		while(itemTokenizer.hasMoreTokens()){
+			String item = itemTokenizer.nextToken();
+			String[] valuesArr = item.split(Pattern.quote(valueDelimiter), -1);
+			
+			Map<String,String> map = new HashMap<String, String>();
+			for(int i=0; i<valuesArr.length; i++){				
+				map.put(fieldsArr[i], valuesArr[i]);
+			}
+			toReturn.add(map);
+		}
+			
 
+		return toReturn;
+	}
+		
 	public static boolean isEqualSet(String[] set1, String[] set2) {
 		if (null == set1 && null == set2) {
 			return true;
@@ -462,7 +489,7 @@ public class Tools {
 	}
 
 	/**
-	 * ¹è¿­ÀÇ ¾ÆÀÌÅÛÀ» ±¸ºÐÀÚ·Î ¿«Àº ÇÏ³ªÀÇ ¹®ÀÚ¿­·Î º¯È¯
+	 * ë°°ì—´ì˜ ì•„ì´í…œì„ êµ¬ë¶„ìžë¡œ ì—®ì€ í•˜ë‚˜ì˜ ë¬¸ìžì—´ë¡œ ë³€í™˜
 	 * @param items
 	 * @param delimiter
 	 * @return
@@ -483,7 +510,7 @@ public class Tools {
 	}
 
 	/**
-	 * ¼­¹ö¿¡¼­ ¹ÞÀº ¿¬°üÅ°¿öµå ¸ñ·Ï ¹®ÀÚ¿­À» ±¸ºÐÀÚ¸¦ »ç¿ëÇØ Pair ¸ñ·ÏÀ¸·Î º¯È¯
+	 * ì„œë²„ì—ì„œ ë°›ì€ ì—°ê´€í‚¤ì›Œë“œ ëª©ë¡ ë¬¸ìžì—´ì„ êµ¬ë¶„ìžë¥¼ ì‚¬ìš©í•´ Pair ëª©ë¡ìœ¼ë¡œ ë³€í™˜
 	 * @param source
 	 * @param itemDelimiter
 	 * @param valueDelimiter
@@ -528,7 +555,7 @@ public class Tools {
 	}
 
 	/**
-	 * ¹®ÀÚ¿­ÀÌ Æ÷ÇÔÇÏ°í ÀÖ´Â ±¸ºÐÀÚ¸¦ ´Ù¸¥ ±¸ºÐÀÚ·Î º¯°æ
+	 * ë¬¸ìžì—´ì´ í¬í•¨í•˜ê³  ìžˆëŠ” êµ¬ë¶„ìžë¥¼ ë‹¤ë¥¸ êµ¬ë¶„ìžë¡œ ë³€ê²½
 	 * @param source
 	 * @param fromDelimiter
 	 * @param toDelimiter
@@ -582,9 +609,24 @@ public class Tools {
 		}
 		return result;
 	}
+	
+	public static String joinExclude(String str, String ex, String delimiter){
+		int idxOfEx = str.indexOf(ex);
+		if(idxOfEx == -1){
+			return str;
+		}else{
+			int fieldAfterDelimiter = str.indexOf(delimiter, idxOfEx);
+			
+			if(fieldAfterDelimiter == -1){
+				return str.substring(0, idxOfEx);
+			}else{
+				return str.substring(0, idxOfEx) + str.substring(fieldAfterDelimiter);
+			}
+		}
+	}
 
 	public static void main(String[] args) {
-		System.out.println("[" + padEmptyItem("", ":") + "]");
+		/*System.out.println("[" + padEmptyItem("", ":") + "]");
 		System.out.println("[" + padEmptyItem(":", ":") + "]");
 		System.out.println("[" + padEmptyItem(":b", ":") + "]");
 		System.out.println("[" + padEmptyItem("a:", ":") + "]");
@@ -593,6 +635,20 @@ public class Tools {
 		System.out.println("[" + padEmptyItem("a:b:::e", ":") + "]");
 		System.out.println("[" + padEmptyItem("a:b:::e:", ":") + "]");
 		System.out.println("[" + padEmptyItem(":this:::a:", ":") + "]");
-		System.out.println(getWebUnicodeString("this is &#50864;&#52404;&#44397; &#53469;&#48176; topic"));
+		System.out.println(getWebUnicodeString("this is &#50864;&#52404;&#44397; &#53469;&#48176; topic"));*/
+		
+		String fields = "TITLE|DATE|CONTENT/200";
+		String values = "a1:a2:a3|b1:b2:b3";
+		
+		System.out.println(joinExclude(fields, "/", "|"));
+		
+		List<Map<String,String>> list = getMapListString(fields, values, "/", ":", "|", "|");
+		for(Map<String,String> map : list){
+			String newFields = joinExclude(fields, "/", "|");
+			String[] fieldsArr = newFields.split(Pattern.quote("|"), -1);
+			for(String field : fieldsArr){				
+				System.out.println(field + " : "+ map.get(field));
+			}
+		}
 	}
 }

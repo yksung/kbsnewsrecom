@@ -19,8 +19,8 @@ import com.wisenut.tea20.types.*;
  *
  */
 public class MessageHandlerForCF {
-	final int INIT_CONNECTION_INTERVAL = 500;
-	final int MAX_CONNECTION_INTERVAL = 500;
+	final int INIT_CONNECTION_INTERVAL = 10000;
+	final int MAX_CONNECTION_INTERVAL = 10000;
 	final int MAX_BUFFER_SIZE = 1024;
 	final int OUT_MESSAGE_HEADER_SIZE = 12;
 	final int IN_MESSAGE_HEADER_SIZE = 10;
@@ -175,41 +175,41 @@ public class MessageHandlerForCF {
 		}
 		
 		String xmlMessage = request.toString();
-        
-        //construct message
-        byte[] message = new byte[0];
+		
+		//construct message
+		byte[] message = new byte[0];
 
-        try {
-            int HEAD_LENGTH = 10;
-            byte[] converted = xmlMessage.getBytes(MESSAGE_ENCODING);
-            message = new byte[converted.length+HEAD_LENGTH];
-            for (int i = 0; i < converted.length; i++) {
-                message[i+HEAD_LENGTH] = converted[i]; 
-            }
-            
-            String strSize = Integer.toString(converted.length);
-            int nZero = HEAD_LENGTH - strSize.length();
-            for (int i=0; i<nZero; i++) {
-                message[i] = ' ';
-            }
-            for (int i=0; i<strSize.length(); i++) {
-                message[i+nZero] = (byte)strSize.charAt(i);
-            }
-            
-            if (send(message)) {
-                responseMessage = receive();
-                MessageParserForCF parser = new MessageParserForCF(responseMessage, true);
-                toReturn = parser.parse();
-            } else {
-                toReturn.setErrorCode("APIL_0004");
-                toReturn.setErrorMessage("failed in sending message: " + failedCause);
-            }
-        } catch(Exception e) {
-            toReturn.setErrorCode("APIL_0010");
-            toReturn.setErrorMessage("system error during messaging: " + e.getMessage());
-        } finally {
-            disconnect();
-        }
+		try {
+			int HEAD_LENGTH = 10;
+			byte[] converted = xmlMessage.getBytes(MESSAGE_ENCODING);
+			message = new byte[converted.length+HEAD_LENGTH];
+			for (int i = 0; i < converted.length; i++) {
+				message[i+HEAD_LENGTH] = converted[i]; 
+			}
+			
+			String strSize = Integer.toString(converted.length);
+			int nZero = HEAD_LENGTH - strSize.length();
+			for (int i=0; i<nZero; i++) {
+				message[i] = ' ';
+			}
+			for (int i=0; i<strSize.length(); i++) {
+				message[i+nZero] = (byte)strSize.charAt(i);
+			}
+			
+			if (send(message)) {
+				responseMessage = receive();
+				MessageParserForCF parser = new MessageParserForCF(responseMessage, true);
+				toReturn = parser.parse();
+			} else {
+				toReturn.setErrorCode("APIL_0004");
+				toReturn.setErrorMessage("failed in sending message: " + failedCause);
+			}
+		} catch(Exception e) {
+			toReturn.setErrorCode("APIL_0010");
+			toReturn.setErrorMessage("system error during messaging: " + e.getMessage());
+		} finally {
+			disconnect();
+		}
 		
 		return toReturn;
 	}
