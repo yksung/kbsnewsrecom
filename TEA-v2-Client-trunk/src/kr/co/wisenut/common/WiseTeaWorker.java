@@ -80,17 +80,12 @@ public class WiseTeaWorker {
 		return documentList;
 	}
 	
-	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, ArrayList<String> searchResultList, String fieldToDisplay) throws Exception {
+	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, String pageSize, ArrayList<String> searchResultList, String fieldToDisplay, String prefix) throws Exception {
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		article = searchField + "$!$" + article;
 		
-		String prefix = "";
-		if(type != null && type.length()>1){
-			prefix = type.substring(0,1).toUpperCase();
-		}
-		
-		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, "100", searchResultList, prefix);
+		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, pageSize, searchResultList, prefix);
 		
 		totalRecommendedMediaCount = documentMap.size();
 		LOGGER.info("getSimilarDocSf1 results in " + documentMap.size() + " documents.");

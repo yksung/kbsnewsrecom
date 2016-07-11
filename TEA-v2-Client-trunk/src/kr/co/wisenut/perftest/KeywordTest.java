@@ -1,6 +1,5 @@
 package kr.co.wisenut.perftest;
 
-import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
@@ -21,7 +20,7 @@ import com.wisenut.tea20.types.Pair;
  * @author dosuser
  *
  */
-public class NERTest extends AbstractJavaSamplerClient {
+public class KeywordTest extends AbstractJavaSamplerClient {
 	private static final Logger LOG = LoggingManager.getLoggerForClass();
 
     /**
@@ -98,8 +97,8 @@ public class NERTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("teaip", "10.0.10.135");
-    	TEA_PORT = context.getIntParameter("teaport", 11000);
+    	TEA_IP = context.getParameter("ip", "10.0.10.135");
+    	TEA_PORT = context.getIntParameter("port", 11000);
     	
     	COLLECTION = context.getParameter("collection", "media");
     	
@@ -117,9 +116,9 @@ public class NERTest extends AbstractJavaSamplerClient {
     @Override
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument("teaip", "10.0.10.135");
-        params.addArgument("teaport", String.valueOf(11000));
-        params.addArgument("collection", "article");
+        params.addArgument("ip", "10.0.10.135");
+        params.addArgument("port", String.valueOf(11000));
+        params.addArgument("collection", "media");
         params.addArgument("contents", "");
         return params;
     }
@@ -150,32 +149,34 @@ public class NERTest extends AbstractJavaSamplerClient {
 			
 			/******************************** TEST START *************************************/ 
 			
+			
 			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, COLLECTION);
-	        
-	        // 유사 기사 덩어리와 입력된 기사를 개체명 조회 메소드에 넣어서 결과를 받아옴.
-			ArrayList<String> filteringDocidList = new ArrayList<String>();
-			String prefix = "";
-	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, "10", filteringDocidList, prefix );
-	 		
-	 		StringBuffer resultSb = new StringBuffer();
-	 		resultSb.append("####################################################################").append("\n");
+
+			List<Pair<Integer>> resultList = teaWorker.getMainKeywordsPair(CONTENTS);
+			int totalResultCount = 0;
+			
+			
+			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
+    		StringBuffer resultSb = new StringBuffer();
+    		resultSb.append("####################################################################").append("\n");
 	 		resultSb.append(CONTENTS).append("\n");
 	 		resultSb.append("####################################################################").append("\n");
-	 		for (int i = 0; i < nerPairList.size(); i++) {
-				resultSb.append("- NO : " + (i+1) + "\n");
-				resultSb.append("- NER : " + nerPairList.get(i).key() + "\n");
-				resultSb.append("- Score : " + nerPairList.get(i).value() + "\n");
-				resultSb.append("\n\n");
-	 		}
 	 		
-	 		results.setSamplerData(resultSb.toString());
+	 		for(Pair<Integer> pair : resultList){
+ 				resultSb.append("- "+pair.key()+"\t(" + pair.value() + ")\n");
+	 			resultSb.append("\n");	 				
+			}
+				
+			results.setSamplerData(resultSb.toString());
+			results.setBodySize(totalResultCount);
 			results.setResponseData(resultSb.toString().getBytes());
+			//}
 			
 			/******************************** TEST END *************************************/
 			
 			results.setSuccessful(true);
 		}catch (Exception e) {
-			getLogger().error("SleepTest_bak: error during sample", e);
+			getLogger().error("KeywordTest>runTest: error during sample", e);
 			results.setSuccessful(false);
 		} finally {
 			results.sampleEnd();

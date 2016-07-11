@@ -28,8 +28,6 @@ public class WiseSearchWorker {
     private static final String GTE_OPERATOR = ":gte:";
     private static final String LTE_OPERATOR = ":lte:";
     private static final String CONTAINS_OPERATOR = ":contains:";
-    private static final String PROP_DOCUMENT_FIELDS = "wisesf1.documentfields.";
-    private static final String PROP_SEARCH_FIELDS = "wisesf1.searchfields.";
 	
 	public static Properties prop;
 	public static String searchIP;
@@ -63,6 +61,16 @@ public class WiseSearchWorker {
 		ranking = "basic,rpf,10000";
 		highlight = "1,1";
 		queryAnalyzer = "1,1,1,1";
+		
+		documentFieldsMap = new HashMap<String,String>();
+		documentFieldsMap.put("article", "DOCID,DIST_ID,DIST_URL,DIST_DTIME,CRTOR_ID,CRTOR_NM,CRT_DTIME,UPDTR_ID,UPDTR_NM,UPD_DTIME,APRVER_ID,APRVER_NM,APRV_DTIME,RPTR_ID,RPTR_NM,ARTCL_STAT_CD,ARTCL_STAT_NM,ORG_ARTCL_STAT_CD,ORG_ARTCL_STAT_NM,ARTCL_KIND_CD,ARTCL_KIND_NM,DEL_YN,TITLE,CONTENT_PLAIN/200,KEYWORD,CLASS_CD,CLASS_NM,CRTOR_DPT_CD,CRTOR_DPT_NM,DIST_YN,APRV_YN,alias");
+		documentFieldsMap.put("video", "DOCID,TYPE,ORG_SYSTEM,CATEGORY,MEDIA_KEY,TITLE,CONTENTS/200,KEYWORD,REPORTER,URL,UPD_DTIME,alias");
+		documentFieldsMap.put("image", "DOCID,TYPE,ORG_SYSTEM,CATEGORY,MEDIA_KEY,TITLE,CONTENTS/200,KEYWORD,REPORTER,URL,UPD_DTIME,alias");
+		
+		searchFieldsMap = new HashMap<String,String>();
+		searchFieldsMap.put("article", "TITLE,CONTENT_PLAIN,KEYWORD");
+		searchFieldsMap.put("video", "TITLE,CONTENTS,KEYWORD");
+		searchFieldsMap.put("image", "TITLE,CONTENTS,KEYWORD");
 	}
 	
 

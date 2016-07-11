@@ -80,9 +80,11 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 	private int TEA_PORT;
 	
 	private String COLLECTION;
+	private String PREFIX;
 	private String DOCUMENT_FIELDS;
 	
 	private String CONTENTS;
+	private String PAGE_SIZE;
 	
 	/*
      * Utility method to set up all the values
@@ -106,10 +108,13 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     	TEA_PORT = context.getIntParameter("port", 11000);
     	
     	COLLECTION = context.getParameter("collection", "media");
+    	PREFIX = context.getParameter("prefix", "A");
     	
     	DOCUMENT_FIELDS = context.getParameter("documentFields");
     	
     	CONTENTS = context.getParameter("contents", "");
+    	
+    	PAGE_SIZE = context.getParameter("pageSize", "10");
     }
     
     @Override
@@ -123,11 +128,13 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     @Override
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument("ip", "10.113.38.22");
+        params.addArgument("ip", "10.0.10.135");
         params.addArgument("port", String.valueOf(11000));
         params.addArgument("collection", "media");
-        params.addArgument("documentFields", "TITLE,CONTENT_PLAIN");
+        params.addArgument("prefix", "A");
+        params.addArgument("documentFields", "TITLE\\:DATE\\:CONTENT/100");
         params.addArgument("contents", "");
+        params.addArgument("pageSize", "10");
         return params;
     }
 
@@ -164,11 +171,8 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			int totalResultCount = 0;
 			
 			// 기사 길이에 따라 모델, 모델+sf1을 구분해서 가져옴.
-	    	if(CONTENTS.length()>200){ // 모델만 사용.
-	    		// similarDoc만 사용
-	    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, searchResultList, DOCUMENT_FIELDS);
-	        	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
-	    	}
+    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX);
+        	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
 
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
     		StringBuffer resultSb = new StringBuffer();

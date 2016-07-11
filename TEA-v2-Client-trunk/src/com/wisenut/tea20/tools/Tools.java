@@ -409,7 +409,7 @@ public class Tools {
 			String[] valuesArr = item.split(Pattern.quote(valueDelimiter), -1);
 			
 			Map<String,String> map = new HashMap<String, String>();
-			for(int i=0; i<valuesArr.length; i++){				
+			for(int i=0; i<fieldsArr.length; i++){				
 				map.put(fieldsArr[i], valuesArr[i]);
 			}
 			toReturn.add(map);

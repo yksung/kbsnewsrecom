@@ -21,8 +21,8 @@ public class ClientTest {
 
     static TeaClient teaClient;
     
-    public static final String TEA_IP = "211.39.140.51";
-    public static final int TEA_PORT = 11891;
+    public static final String TEA_IP = "10.0.10.135";
+    public static final int TEA_PORT = 11000;
     
 	public static final String SEARCH_IP = "211.39.140.51";
 	public static final int SEARCH_PORT = 7000;
@@ -32,8 +32,8 @@ public class ClientTest {
     	//test_getSimilarDoc();
     	//test_getSimilarDoc2();
     	//test_getSimilarDoc3();
-    	test_getSimilarDocWithContent();
-    	//test_getNer();
+    	//test_getSimilarDocWithContent("media");
+    	test_getNer();
     	
     	System.exit(0);
     }
@@ -127,16 +127,25 @@ public class ClientTest {
     
     
     
-    public static void test_getSimilarDocWithContent()
+    public static void test_getSimilarDocWithContent(String type)
     {
     	System.out.println( "=========== test_getSimilarDocWithContent() ===========");
-    	String content = "(새벽 03시부터 사용 가능합니다)      인공지능 컴퓨터가  바둑 경기에서 처음으로 프로 기사를 이겼습니다.    세계적 학술지 네이처는 구글의 자회사인 구글 딥마인드가 개발한 컴퓨터 바둑 프로그램 '알파고'가 유럽 바둑 챔피언이자 중국 프로 바둑 기사인 판후이 2단과 다섯 차례 대국에서 모두 이겼다고 발표했습니다.    바둑은 체스와는 달리 탐색 공간이 광범위한 데다 한 수의 위치를 평가하기 어려워 인공지능이 도전하기 어려운 영역으로 여겨졌습니다.    '알파고'는 수의 위치를 평가하는 '가치 네트워크'와 움직임을 선택하는 '정책 네트워크'를 사용하도록 개발됐고 실제 바둑 경기 등을 통해 학습했다고 네이처는 설명했습니다.    네이처는 인공지능도 인간 수준의 능력에 도달할 수 있다는 희망을 제시했다고 평가했습니다.    알파고는 오는 3월 서울에서 바둑 세계 챔피언 이세돌과 맞대결을 벌일 예정입니다.#####";
+    	//String content = "(새벽 03시부터 사용 가능합니다)      인공지능 컴퓨터가  바둑 경기에서 처음으로 프로 기사를 이겼습니다.    세계적 학술지 네이처는 구글의 자회사인 구글 딥마인드가 개발한 컴퓨터 바둑 프로그램 '알파고'가 유럽 바둑 챔피언이자 중국 프로 바둑 기사인 판후이 2단과 다섯 차례 대국에서 모두 이겼다고 발표했습니다.    바둑은 체스와는 달리 탐색 공간이 광범위한 데다 한 수의 위치를 평가하기 어려워 인공지능이 도전하기 어려운 영역으로 여겨졌습니다.    '알파고'는 수의 위치를 평가하는 '가치 네트워크'와 움직임을 선택하는 '정책 네트워크'를 사용하도록 개발됐고 실제 바둑 경기 등을 통해 학습했다고 네이처는 설명했습니다.    네이처는 인공지능도 인간 수준의 능력에 도달할 수 있다는 희망을 제시했다고 평가했습니다.    알파고는 오는 3월 서울에서 바둑 세계 챔피언 이세돌과 맞대결을 벌일 예정입니다.#####";
+    	String content = "(베이루트 AFP=연합뉴스)    5년동안 내전에 시달리는 시리아에서 지난 한 해(2015년) 5만5천여 명이 숨진것으로 추정되고 있습니다.   영국의 '시리아인권관측소'는 희생자 5만5천여 명 가운데 30% 정도인1만 3천여 명이 민간인이었고, 어린이도 2천5백여 명 포함됐다고 밝혔습니다.   내전이 시작된 지난 2011년부터 지금까지 시리아에서 숨진 사람들은 민간인 7만 6천여 명을 포함해 모두 26만 명인 것으로 집계됐습니다.###";
     	
     	//get similar document list by model  		
   	   	ArrayList<String> docIdListForFiltering =  new ArrayList<String>();
+  	   	
     	String prefix = ""; // none
+		if("image".equals(type)){
+			prefix = "I";
+		}else if("video".equals(type)){
+			prefix = "V";
+		}else if("article".equals(type) || "media".equals(type)){
+			prefix = "A";
+		}
     	
-		Map<String,Map<String,String>> resultMap = getSimilarDocWithContent( "kbs", "TITLE:DATE:CONTENT/100", content, "10", docIdListForFiltering, prefix); 
+		Map<String,Map<String,String>> resultMap = getSimilarDocWithContent( "media", "TITLE", content, "10", docIdListForFiltering, prefix); 
 		
         // how to print similarDocumentList and similarDocumentContentList
     	Iterator<String> iter = resultMap.keySet().iterator();
@@ -144,7 +153,7 @@ public class ClientTest {
     		String docid = iter.next();
     		System.out.println(docid + " >>>>");
     		Map<String,String> contents = resultMap.get(docid);
-    		String[] fields = Tools.joinExclude("TITLE:DATE:CONTENT/100", "/", ":").split(":");
+    		String[] fields = Tools.joinExclude("TITLE", "/", ":").split(":");
     		
     		for(String field: fields){    			
     			System.out.println(field + " : " + contents.get(field));
@@ -157,7 +166,7 @@ public class ClientTest {
     public static void test_getNer()
     {
     	System.out.println( "=========== test_getNer() ===========");
-    	String content = "(새벽 03시부터 사용 가능합니다)      인공지능 컴퓨터가  바둑 경기에서 처음으로 프로 기사를 이겼습니다.    세계적 학술지 네이처는 구글의 자회사인 구글 딥마인드가 개발한 컴퓨터 바둑 프로그램 '알파고'가 유럽 바둑 챔피언이자 중국 프로 바둑 기사인 판후이 2단과 다섯 차례 대국에서 모두 이겼다고 발표했습니다.    바둑은 체스와는 달리 탐색 공간이 광범위한 데다 한 수의 위치를 평가하기 어려워 인공지능이 도전하기 어려운 영역으로 여겨졌습니다.    '알파고'는 수의 위치를 평가하는 '가치 네트워크'와 움직임을 선택하는 '정책 네트워크'를 사용하도록 개발됐고 실제 바둑 경기 등을 통해 학습했다고 네이처는 설명했습니다.    네이처는 인공지능도 인간 수준의 능력에 도달할 수 있다는 희망을 제시했다고 평가했습니다.    알파고는 오는 3월 서울에서 바둑 세계 챔피언 이세돌과 맞대결을 벌일 예정입니다.#####";
+    	String content = "경기도의회 여야가 누리과정예산안에 합의를 이루지 못하고 처리시한인 지난해 12월 31일을 넘기면서, 경기도와 경기도교육청이 사상 첫 준예산 사태를 맞았습니다.  준예산은 지방자치법에 따라 회계연도가 시작되는 1월 1일까지 예산안이 의결되지 못할 경우, 전년도 예산에 준해 법정 경비만 집행하는 것입니다.  이에 따라이달부터 경기도내 유치원생 19만 8천명과 어린이집 15만6천여 명 등 35만 명이 넘는 유아에 대한 누리과정 지원이 중단됩니다.  유치원과 어린이집 모두 누리과정 예산이 전혀반영되지 않은 곳은 서울·광주·전남에 이어 경기도가 4번째입니다.   앞서 경기도의회 다수당인 더불어민주당은 누리과정 예산을중앙정부가 책임져야 한다며 예산안에 누리과정 예산을 편성하지 않았고, 새누리당은 도교육청 예산으로 6개월분을 우선 편성해야 한다고맞서며 의장석을 점거하는 등 몸싸움이 벌어졌고 의원 4명이 병원으로 실려갔습니다.  예산안 처리가 무산되자 남경필 경기도지사는 입장자료를 내고, 빠른 시간 안에 도의회 임시회를 열어 예산안을 처리해달라고 요청했습니다.  이재정 경기도 교육감은 준예산 사태를 유발한 모든 책임은 대통령과 정부 당국에 있다며 대통령이 결단해달라고 촉구했습니다.///";
   	   	ArrayList<String> docIdListForFiltering =  new ArrayList<String>();
     	String prefix = ""; // none
     	//get similar document list by model  		
@@ -203,6 +212,13 @@ public class ClientTest {
    	 
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
+    	
+    	System.out.println("- collection : " + collection);
+    	System.out.println("- query : " + query);
+    	System.out.println("- fieldToDisplay : " + fieldToDisplay);
+    	System.out.println("- pageSize : " + pageSize);
+    	System.out.println("- docListForFiltering.size() : " + docListForFiltering.size());
+    	System.out.println("- prefix : " + prefix);
          
         return teaClient.getSimilarDocWithContent( collection, query, fieldToDisplay, pageSize, docListForFiltering, prefix);
     }
@@ -212,7 +228,7 @@ public class ClientTest {
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
     	
-    	return teaClient.extractNerForPlainText("kbs", query,"10", searchResultList, prefix );
+    	return teaClient.extractNerForPlainText("media", query,"10", searchResultList, prefix );
     }
    
     public ArrayList<String> search(String query, int listNo, int isDebug){
