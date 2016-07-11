@@ -162,9 +162,10 @@ public class SearchTest extends AbstractJavaSamplerClient {
 			results.sampleStart();
 			
 			/******************************** TEST START *************************************/
-			WiseSearchWorker searchWorker = new WiseSearchWorker(IP, PORT, COLLECTION, SEARCH_FIELDS, DOCUMENT_FIELDS);
+			WiseSearchWorker searchWorker = new WiseSearchWorker(IP, PORT);
 			
-			searchWorker.search(QUERY, "", Integer.parseInt(PAGE), Integer.parseInt(PAGESIZE), "", "", "");
+			String sort = "", filterQuery = "", prefixQuery = "";
+			searchWorker.search(COLLECTION, QUERY, sort, Integer.parseInt(PAGE), Integer.parseInt(PAGESIZE), filterQuery, prefixQuery, SEARCH_FIELDS, DOCUMENT_FIELDS);
 			ArrayList<HashMap<String,String>> resultList = searchWorker.getResultList();
 			
 			// 카테고리 추천 결과를 세팅.

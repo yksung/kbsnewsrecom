@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import kr.co.wisenut.common.WiseSearchWorker;
 import kr.co.wisenut.common.WiseTeaWorker;
@@ -77,15 +78,11 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     /* 추천엔진 관련 파라미터 변수 */
 	private String TEA_IP;
 	private int TEA_PORT;
-	private String SF1_IP;
-	private int SF1_PORT;
 	
 	private String COLLECTION;
-	private String SEARCH_FIELDS;
 	private String DOCUMENT_FIELDS;
 	
 	private String CONTENTS;
-	private int PAGE_NO;
 	
 	/*
      * Utility method to set up all the values
@@ -105,19 +102,14 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("teaip", "10.113.38.22");
-    	TEA_PORT = context.getIntParameter("teaport", 11000);
+    	TEA_IP = context.getParameter("ip", "10.113.38.22");
+    	TEA_PORT = context.getIntParameter("port", 11000);
     	
-    	SF1_IP = context.getParameter("sf1ip", "10.113.38.22");
-    	SF1_PORT = context.getIntParameter("sf1port", 7000);
+    	COLLECTION = context.getParameter("collection", "media");
     	
-    	COLLECTION = context.getParameter("collection", "article");
-    	
-    	SEARCH_FIELDS = context.getParameter("searchfields");
-    	DOCUMENT_FIELDS = context.getParameter("documentfields");
+    	DOCUMENT_FIELDS = context.getParameter("documentFields");
     	
     	CONTENTS = context.getParameter("contents", "");
-    	PAGE_NO = context.getIntParameter("pagesize", 10);
     }
     
     @Override
@@ -131,15 +123,11 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     @Override
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument("teaip", "10.113.38.22");
-        params.addArgument("teaport", String.valueOf(11000));
-        params.addArgument("sf1ip", "10.113.38.22");
-        params.addArgument("sf1port", String.valueOf(7000));
-        params.addArgument("collection", "article");
-        params.addArgument("searchfields", "CONTENT_PLAIN");
-        params.addArgument("documentfields", "TITLE,CONTENT_PLAIN");
+        params.addArgument("ip", "10.113.38.22");
+        params.addArgument("port", String.valueOf(11000));
+        params.addArgument("collection", "media");
+        params.addArgument("documentFields", "TITLE,CONTENT_PLAIN");
         params.addArgument("contents", "");
-        params.addArgument("pagesize", "");
         return params;
     }
 
@@ -169,76 +157,37 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			
 			/******************************** TEST START *************************************/ 
 			
-			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, COLLECTION);
-			WiseSearchWorker searchWorker = new WiseSearchWorker(SF1_IP, SF1_PORT, COLLECTION, SEARCH_FIELDS, DOCUMENT_FIELDS);
 			
-			List<Pair<Double>> docidList = new ArrayList<Pair<Double>>();
+			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, COLLECTION);
+			ArrayList<String> searchResultList = new ArrayList<String>();
+			Map<String, Map<String,String>> resultMap = new HashMap<String, Map<String,String>>(); 
 			int totalResultCount = 0;
 			
 			// 기사 길이에 따라 모델, 모델+sf1을 구분해서 가져옴.
 	    	if(CONTENTS.length()>200){ // 모델만 사용.
 	    		// similarDoc만 사용
-	        	docidList = teaWorker.getRecommendedContentsPair(COLLECTION, CONTENTS, PAGE_NO);
+	    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, searchResultList, DOCUMENT_FIELDS);
 	        	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
-	    	}/*else{ // 모델 + SF1 사용
-	    		// 입력 받은 기사에서 주제어를 추출.
-	    		List<Pair<Integer>> keywordList = teaWorker.getMainKeywordsPair(CONTENTS);
-	        	StringBuffer query = new StringBuffer();
-	           
-	        	// 추출한 주제어를 OR 연산자(|)로 연결.
-	            for (int i = 0; i < keywordList.size(); i++) {
-	             	Pair<Integer> item = keywordList.get(i);
-	     			if (null == item) continue;
-	     			
-	     			if( query.length() != 0 )
-	     				query.append("|");
-	     			
-	     			query.append(item.key());
-	     		}
-	            
-	            HashMap<String,String> prefixMap = new HashMap<String,String>();
-	            prefixMap.put("alias", COLLECTION);
-	            
-	            // OR 연산자로 연결한 쿼리로 SF-1에 검색.
-	            searchWorker.search(query.toString(), "", 0, PAGE_NO, "", "", "ALL");
-	            
-	            // 검색 결과와 tea의 similarDoc 결과를 조합. 검색 결과 중 기사(article)의 결과만 리스트로 제공
-	            docidList = teaWorker.getRecommendedContentsPair(COLLECTION, CONTENTS, searchWorker.getDocidList());
-	            totalResultCount = teaWorker.getTotalRecommendedMediaCount();
 	    	}
-			
-	    	StringBuffer keyBuffer = new StringBuffer();
-    		HashMap<String,String> map = new HashMap<String, String>();
-    		
-	    	for(Pair<Double> p : docidList){
-	    		keyBuffer.append(p.key()).append("|");
-	    	}
-	    	
-	    	if(docidList.size()>0){	    		
-	    		map.put("DOCID", keyBuffer.toString().replaceAll("\\|$", ""));
-	    	}
-    		
-    		searchWorker.search("", "", 0, PAGE_NO, "", searchWorker.makePrefixQuery(map), "ALL");
-    		totalResultCount = searchWorker.getTotalResultCount();
-	    	 */
-    		
+
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
     		StringBuffer resultSb = new StringBuffer();
     		resultSb.append("####################################################################").append("\n");
 	 		resultSb.append(CONTENTS).append("\n");
 	 		resultSb.append("####################################################################").append("\n");
-			//if(searchWorker.getResultList().size()>0){
-				//for(HashMap<String,String> resultMap : searchWorker.getResultList()){
-				//for(int cnt=1; cnt<=searchWorker.getResultList().size(); cnt++){
-	 		for (Pair<Double> item : docidList) {
-	            if (null == item) {
-	                continue;
-	            }
-				
-				//resultSb.append("- NO : " + cnt + "\n");
-				resultSb.append("- DOCID : " + item.key() + "\n");
-				resultSb.append("- SCORE : " + item.value() + "\n");
-				resultSb.append("\n\n");
+	 		
+	 		Iterator<String> docidIter = resultMap.keySet().iterator();
+	 		while ( docidIter.hasNext()	) {
+	 			String docid = docidIter.next();
+	 			
+	 			Map<String,String> item = resultMap.get(docid);
+	 			
+	 			Iterator<String> itemIter = item.keySet().iterator();
+	 			while(itemIter.hasNext()){
+	 				String field = itemIter.next();
+	 				resultSb.append("- "+field+" : " + item.get(field) + "\n");
+	 			}				
+	 			resultSb.append("\n");	 				
 			}
 				
 			results.setSamplerData(resultSb.toString());
@@ -250,7 +199,7 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			
 			results.setSuccessful(true);
 		}catch (Exception e) {
-			getLogger().error("SleepTest_bak: error during sample", e);
+			getLogger().error("RecommendTest>runTest: error during sample", e);
 			results.setSuccessful(false);
 		} finally {
 			results.sampleEnd();

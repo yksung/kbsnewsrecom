@@ -846,7 +846,7 @@ public class TeaClient {
             String contentString = response.getValue("similar_content").trim();
             
             List<Pair<Double>> similarDocumentList = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
-            List<Map<String,String>> contentMapList = Tools.getMapListString(content_field, contentString, "/", VALUE_DELIMITER, ITEM_DELIMITER, FIELD_DELIMITER);
+            List<Map<String,String>> contentMapList = Tools.getMapListString(content_field, contentString, "/", VALUE_DELIMITER, ITEM_DELIMITER);
             
             for(int i=0; i<similarDocumentList.size(); i++){
             	toReturn.put(similarDocumentList.get(i).key(), contentMapList.get(i));

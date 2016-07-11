@@ -393,11 +393,11 @@ public class Tools {
 		return toReturn;
 	}
 	
-	public static List<Map<String,String>> getMapListString(String fields, String contents, String lengthDelimiter, String valueDelimiter, String itemDelimiter, String fieldDelimiter) {
+	public static List<Map<String,String>> getMapListString(String fields, String contents, String lengthDelimiter, String valueDelimiter, String itemDelimiter) {
 		List<Map<String,String>> toReturn = new ArrayList<Map<String,String>>();
 		
-		String lengthRemovedFields = joinExclude(fields, lengthDelimiter, fieldDelimiter);
-		StringTokenizer tokenizer = new StringTokenizer(lengthRemovedFields, fieldDelimiter);
+		String lengthRemovedFields = joinExclude(fields, lengthDelimiter, valueDelimiter);
+		StringTokenizer tokenizer = new StringTokenizer(lengthRemovedFields, valueDelimiter);
 		String[] fieldsArr = new String[tokenizer.countTokens()];
 		for(int i=0; i<fieldsArr.length; i++){
 			fieldsArr[i] = tokenizer.nextToken();
@@ -637,15 +637,19 @@ public class Tools {
 		System.out.println("[" + padEmptyItem(":this:::a:", ":") + "]");
 		System.out.println(getWebUnicodeString("this is &#50864;&#52404;&#44397; &#53469;&#48176; topic"));*/
 		
-		String fields = "TITLE|DATE|CONTENT/200";
+		String fields = "TITLE:DATE:CONTENT/200";
 		String values = "a1:a2:a3|b1:b2:b3";
 		
-		System.out.println(joinExclude(fields, "/", "|"));
+		String valueDelimiter = ":";
+		String itemDelimiter = "|";
+		String scoreDelimiter = "/";
 		
-		List<Map<String,String>> list = getMapListString(fields, values, "/", ":", "|", "|");
+		System.out.println(joinExclude(fields, scoreDelimiter, valueDelimiter));
+		
+		List<Map<String,String>> list = getMapListString(fields, values, scoreDelimiter, valueDelimiter, itemDelimiter);
 		for(Map<String,String> map : list){
-			String newFields = joinExclude(fields, "/", "|");
-			String[] fieldsArr = newFields.split(Pattern.quote("|"), -1);
+			String newFields = joinExclude(fields, scoreDelimiter, valueDelimiter);
+			String[] fieldsArr = newFields.split(Pattern.quote(valueDelimiter), -1);
 			for(String field : fieldsArr){				
 				System.out.println(field + " : "+ map.get(field));
 			}

@@ -2,6 +2,7 @@ package kr.co.wisenut.common;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
@@ -57,30 +58,16 @@ public class WiseTeaWorker {
 		return teaClient.extractNerForPlainText(collection, article, topN, filteringDocidList, prefix);
 	}
 	
-	// 모델만 이용
-	public List<Pair<Double>> getRecommendedContentsPair(String type, String contents, int pageSize) throws Exception {
-		TeaClient teaClient = new TeaClient(teaIP, teaPort);
-		
-		contents = searchField + "$!$" + contents;
-		List<Pair<Double>> documentList = teaClient.getSimilarDoc( type, contents, String.valueOf(pageSize), "");
-		
-		totalRecommendedMediaCount = documentList.size();
-		LOGGER.info("getSimilarDoc results in " + documentList.size() + " documents.");
-		
-		if(teaClient.hasError()){
-			LOGGER.error("[WiseTeaWorker>getRecommendedContentsPair][" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
-			throw new Exception("[" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
-		}
-		
-		return documentList;
-	}
-	
-	// 모델 + SF-1 결과를 조합
 	public List<Pair<Double>> getRecommendedContentsPair(String type, String article, ArrayList<String> searchResultList) throws Exception {
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		article = searchField + "$!$" + article;
-		List<Pair<Double>> documentList = teaClient.getSimilarDoc( type, article, "100", searchResultList, "");
+		
+		String prefix = "";
+		if(type != null && type.length()>1){
+			prefix = type.substring(0,1).toUpperCase();
+		}
+		List<Pair<Double>> documentList = teaClient.getSimilarDoc( type, article, "100", searchResultList, prefix);
 		
 		totalRecommendedMediaCount = documentList.size();
 		LOGGER.info("getSimilarDocSf1 results in " + documentList.size() + " documents.");
@@ -91,6 +78,29 @@ public class WiseTeaWorker {
 		}
 		
 		return documentList;
+	}
+	
+	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, ArrayList<String> searchResultList, String fieldToDisplay) throws Exception {
+		TeaClient teaClient = new TeaClient(teaIP, teaPort);
+		
+		article = searchField + "$!$" + article;
+		
+		String prefix = "";
+		if(type != null && type.length()>1){
+			prefix = type.substring(0,1).toUpperCase();
+		}
+		
+		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, "100", searchResultList, prefix);
+		
+		totalRecommendedMediaCount = documentMap.size();
+		LOGGER.info("getSimilarDocSf1 results in " + documentMap.size() + " documents.");
+		
+		if(teaClient.hasError()){
+			LOGGER.error("[WiseTeaWorker>getRecommendedContents][" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
+			throw new Exception("[" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
+		}
+		
+		return documentMap;
 	}
 	
 	public int getTotalRecommendedMediaCount(){

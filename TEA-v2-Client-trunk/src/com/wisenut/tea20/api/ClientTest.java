@@ -136,7 +136,7 @@ public class ClientTest {
   	   	ArrayList<String> docIdListForFiltering =  new ArrayList<String>();
     	String prefix = ""; // none
     	
-		Map<String,Map<String,String>> resultMap = getSimilarDocWithContent( "kbs", "TITLE$!$DATE$!$CONTENT/100", content, "10", docIdListForFiltering, prefix); 
+		Map<String,Map<String,String>> resultMap = getSimilarDocWithContent( "kbs", "TITLE:DATE:CONTENT/100", content, "10", docIdListForFiltering, prefix); 
 		
         // how to print similarDocumentList and similarDocumentContentList
     	Iterator<String> iter = resultMap.keySet().iterator();
@@ -144,7 +144,7 @@ public class ClientTest {
     		String docid = iter.next();
     		System.out.println(docid + " >>>>");
     		Map<String,String> contents = resultMap.get(docid);
-    		String[] fields = Tools.joinExclude("TITLE|DATE|CONTENT/100", "/", "|").split("\\|");
+    		String[] fields = Tools.joinExclude("TITLE:DATE:CONTENT/100", "/", ":").split(":");
     		
     		for(String field: fields){    			
     			System.out.println(field + " : " + contents.get(field));
