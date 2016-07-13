@@ -401,7 +401,7 @@ public class Tools {
 		String[] fieldsArr = new String[tokenizer.countTokens()];
 		for(int i=0; i<fieldsArr.length; i++){
 			fieldsArr[i] = tokenizer.nextToken();
-		}//////gkgkgkgkgk
+		}
 		
 		StringTokenizer itemTokenizer = new StringTokenizer(contents, itemDelimiter);
 		while(itemTokenizer.hasMoreTokens()){
