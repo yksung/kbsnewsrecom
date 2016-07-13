@@ -396,16 +396,21 @@ public class Tools {
 	public static List<Map<String,String>> getMapListString(String fields, String contents, String lengthDelimiter, String valueDelimiter, String itemDelimiter) {
 		List<Map<String,String>> toReturn = new ArrayList<Map<String,String>>();
 		
+		// TITLE:CONTENT/200 -> TITLE:CONTENT		
 		String lengthRemovedFields = joinExclude(fields, lengthDelimiter, valueDelimiter);
+		
+		// TITLE:CONTENT -> { "TITLE", "CONTENT" }
 		StringTokenizer tokenizer = new StringTokenizer(lengthRemovedFields, valueDelimiter);
 		String[] fieldsArr = new String[tokenizer.countTokens()];
 		for(int i=0; i<fieldsArr.length; i++){
 			fieldsArr[i] = tokenizer.nextToken();
 		}
 		
+		// 제목111111:내용111111|제목222222:내용2222222|제목3333333:내용3333333|....|제목nnnnnnnn:내용nnnnnnn
 		StringTokenizer itemTokenizer = new StringTokenizer(contents, itemDelimiter);
 		while(itemTokenizer.hasMoreTokens()){
 			String item = itemTokenizer.nextToken();
+			// 빈 항목이 있어도 계산해서 array를 계산
 			String[] valuesArr = item.split(Pattern.quote(valueDelimiter), -1);
 			
 			Map<String,String> map = new HashMap<String, String>();
@@ -414,7 +419,6 @@ public class Tools {
 			}
 			toReturn.add(map);
 		}
-			
 
 		return toReturn;
 	}
