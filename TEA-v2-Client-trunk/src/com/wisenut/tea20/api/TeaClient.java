@@ -991,7 +991,7 @@ public class TeaClient {
             return toReturn;
         }
 
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "topn", "filter_docId", "filter_prefix" };
+        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix" };
         SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
@@ -1000,7 +1000,7 @@ public class TeaClient {
         request.setValue("field_delimiter", FIELD_DELIMITER);
         request.setValue("value_delimiter", VALUE_DELIMITER);
         request.setValue("item_delimiter", ITEM_DELIMITER);
-        request.setValue("topn", topN);
+        request.setValue("top_count", topN);
         request.setValue("filter_docId", filter_docId );
         request.setValue("filter_prefix", prefix);
                 

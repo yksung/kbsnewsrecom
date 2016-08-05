@@ -29,11 +29,11 @@ public class ClientTest {
 	public static final int SEARCH_TIMEOUT = 20000;
 	
     public static void main(String[] args) {
-    	//test_getSimilarDoc();
+    	test_getSimilarDoc();
     	//test_getSimilarDoc2();
     	//test_getSimilarDoc3();
     	//test_getSimilarDocWithContent("media");
-    	test_getNer();
+    	//test_getNer();
     	
     	System.exit(0);
     }
@@ -60,11 +60,11 @@ public class ClientTest {
     {
    		System.out.println( "=========== test_getSimilarDoc1() ===========");
     	//String content = "(새벽 03시부터 사용 가능합니다)      인공지능 컴퓨터가  바둑 경기에서 처음으로 프로 기사를 이겼습니다.    세계적 학술지 네이처는 구글의 자회사인 구글 딥마인드가 개발한 컴퓨터 바둑 프로그램 '알파고'가 유럽 바둑 챔피언이자 중국 프로 바둑 기사인 판후이 2단과 다섯 차례 대국에서 모두 이겼다고 발표했습니다.    바둑은 체스와는 달리 탐색 공간이 광범위한 데다 한 수의 위치를 평가하기 어려워 인공지능이 도전하기 어려운 영역으로 여겨졌습니다.    '알파고'는 수의 위치를 평가하는 '가치 네트워크'와 움직임을 선택하는 '정책 네트워크'를 사용하도록 개발됐고 실제 바둑 경기 등을 통해 학습했다고 네이처는 설명했습니다.    네이처는 인공지능도 인간 수준의 능력에 도달할 수 있다는 희망을 제시했다고 평가했습니다.    알파고는 오는 3월 서울에서 바둑 세계 챔피언 이세돌과 맞대결을 벌일 예정입니다.#####";
-    	String content = "    어제 오후 10시쯤 강원도 강릉시 옥계면 금진리의 한 펜션 옆 잔디밭에서 불이 나 인근 야산 잡목 등 16제곱미터를 태우고 20분 만에 꺼졌습니다.     경찰과 소방당국은 펜션 숙박객 등을 상대로 정확한 화재 원인을 조사하고 있습니다.   (사진제공: 강원 강릉소방서)";
+    	String content = "    정부가 비용을 지원하는 자궁경부암 검진 나이가 기존 30살에서 20살로 낮춰지고, 간암 검진 주기도 1년에서 6개월로 단축됩니다.     보건복지부는  암관리법 시행령 일부 개정안에 따라 의견 수렴을 거쳐, 늦어도 다음달 안에 시행된다고 밝혔습니다.     정부는 자궁경부암이 20살부터 >나타나면서 만 12살 이하 국가 예방접종에 자궁경부암 접종도 포함했고, 간암의 조기 검진의 중요성을 반영했다고 밝혔습니다.     한편, 올해부터는 암과  심장병 등 4대 중증질환의 치료 목적인 초음파 검사와 수면 내시경에도  건강보험 혜택이 이뤄집니다.@@@";
     	
     	System.out.println( content.length() );
     	ArrayList<String> docIdListForFiltering =  new ArrayList<String>();
-    	String prefix = "";
+    	String prefix = "A";
     	
     	//get similar document list by model  		
 		List<Pair<Double>> similarDocumentList = getSimilarDoc( content, docIdListForFiltering, prefix );     
@@ -204,7 +204,7 @@ public class ClientTest {
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
          
-        return teaClient.getSimilarDoc( "kbs", query, "10", docListForFiltering, prefix);
+        return teaClient.getSimilarDoc( "media", query, "10", docListForFiltering, prefix);
     }
     
     //public static List<Pair<Double>> getSimilarDocWithContent( String collection, String fieldToDisplay, String content, String pageSize, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> docListForFiltering, String prefix ) {
