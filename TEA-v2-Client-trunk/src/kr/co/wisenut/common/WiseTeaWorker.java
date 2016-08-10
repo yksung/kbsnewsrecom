@@ -47,7 +47,7 @@ public class WiseTeaWorker {
 		return keywordList;
 	}
 	
-	public List<Pair<Integer>> getNerPair(String collection, String article, String topN, ArrayList<String> filteringDocidList, String prefix) throws Exception{
+	public List<Pair<Integer>> getNerPair(String collection, String article, String topN, ArrayList<String> filteringDocidList, String prefix, String startDate, String endDate) throws Exception{
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		if(teaClient.hasError()){
@@ -55,10 +55,10 @@ public class WiseTeaWorker {
 			throw new Exception("[" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
 		}
 		//extractNerForPlainText(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix)  
-		return teaClient.extractNerForPlainText(collection, article, topN, filteringDocidList, prefix);
+		return teaClient.extractNerForPlainText(collection, article, topN, filteringDocidList, prefix, startDate, endDate );
 	}
 	
-	public List<Pair<Double>> getRecommendedContentsPair(String type, String article, ArrayList<String> searchResultList) throws Exception {
+	public List<Pair<Double>> getRecommendedContentsPair(String type, String article, ArrayList<String> searchResultList, String startDate, String endDate) throws Exception {
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		article = searchField + "$!$" + article;
@@ -67,7 +67,7 @@ public class WiseTeaWorker {
 		if(type != null && type.length()>1){
 			prefix = type.substring(0,1).toUpperCase();
 		}
-		List<Pair<Double>> documentList = teaClient.getSimilarDoc( type, article, "100", searchResultList, prefix);
+		List<Pair<Double>> documentList = teaClient.getSimilarDoc( type, article, "100", searchResultList, prefix, startDate, endDate );
 		
 		totalRecommendedMediaCount = documentList.size();
 		LOGGER.info("getSimilarDocSf1 results in " + documentList.size() + " documents.");
@@ -80,12 +80,12 @@ public class WiseTeaWorker {
 		return documentList;
 	}
 	
-	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, String pageSize, ArrayList<String> searchResultList, String fieldToDisplay, String prefix) throws Exception {
+	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, String pageSize, ArrayList<String> searchResultList, String fieldToDisplay, String prefix, String startDate, String endDate) throws Exception {
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		article = searchField + "$!$" + article;
 		
-		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, pageSize, searchResultList, prefix);
+		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, pageSize, searchResultList, prefix, startDate, endDate);
 		
 		totalRecommendedMediaCount = documentMap.size();
 		LOGGER.info("getSimilarDocSf1 results in " + documentMap.size() + " documents.");
