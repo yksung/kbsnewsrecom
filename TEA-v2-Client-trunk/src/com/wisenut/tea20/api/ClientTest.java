@@ -196,7 +196,7 @@ public class ClientTest {
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
          
-        return teaClient.getSimilarDoc( "kbs", query, "10", prefix);
+        return teaClient.getSimilarDoc( "kbs", query, "10", prefix, "20160101000000", "20160630000000" );
     }
     
     public static List<Pair<Double>> getSimilarDoc( String content, ArrayList<String> docListForFiltering, String prefix ) {
@@ -204,7 +204,7 @@ public class ClientTest {
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
          
-        return teaClient.getSimilarDoc( "media", query, "10", docListForFiltering, prefix);
+        return teaClient.getSimilarDoc( "media", query, "10", docListForFiltering, prefix , "20160101000000", "20160630000000" );
     }
     
     //public static List<Pair<Double>> getSimilarDocWithContent( String collection, String fieldToDisplay, String content, String pageSize, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> docListForFiltering, String prefix ) {
@@ -220,7 +220,7 @@ public class ClientTest {
     	System.out.println("- docListForFiltering.size() : " + docListForFiltering.size());
     	System.out.println("- prefix : " + prefix);
          
-        return teaClient.getSimilarDocWithContent( collection, query, fieldToDisplay, pageSize, docListForFiltering, prefix);
+        return teaClient.getSimilarDocWithContent( collection, query, fieldToDisplay, pageSize, docListForFiltering, prefix , "20160101000000", "20160630000000" );
     }
            
     public static List<Pair<Integer>> extractNer( String content, ArrayList<String> searchResultList, String prefix ) {
@@ -228,7 +228,7 @@ public class ClientTest {
     	teaClient = new TeaClient(TEA_IP, TEA_PORT);
     	String query = "CONTENT_PLAIN" + "$!$" + content;
     	
-    	return teaClient.extractNerForPlainText("media", query,"10", searchResultList, prefix );
+    	return teaClient.extractNerForPlainText("media", query,"10", searchResultList, prefix, "20160101000000", "20160630000000"  );
     }
    
     public ArrayList<String> search(String query, int listNo, int isDebug){

@@ -800,7 +800,7 @@ public class TeaClient {
     }
     
     //public List<Pair<Double>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> resultList, String prefix ) {
-    public Map<String, Map<String,String>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, ArrayList<String> resultList, String prefix ) {
+    public Map<String, Map<String,String>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, ArrayList<String> resultList, String prefix, String startDate, String endDate ) {
     	Map<String, Map<String,String>> toReturn = new HashMap<String, Map<String,String>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
             setError("APIL_0100", "argument's not valid.");
@@ -819,7 +819,9 @@ public class TeaClient {
         	filter_docId += docList.next() + ITEM_DELIMITER;
         }
         
-        String[] paramFields = {"collection_id", "target_field", "content", "content_field", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix" };
+        String[] paramFields = {"collection_id", "target_field", "content", "content_field", "field_delimiter"
+        						, "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix"
+        						, "startDate", "endDate" };
         SocketMessage request = new SocketMessage("recommender", "get_similar_doc_with_content", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
@@ -833,6 +835,9 @@ public class TeaClient {
         
         request.setValue("filter_docId", filter_docId);
         request.setValue("filter_prefix", prefix);
+        
+        request.setValue("startDate", startDate);
+        request.setValue("endDate", endDate);
         
         SocketMessage response = handleMessage(request);
         if (!isSuccessful(response)) {
@@ -875,7 +880,7 @@ public class TeaClient {
      * @param targetField	field name for keyword extraction in server's configuration
      * @return wrapper object for keyword-weight pairs
      */
-    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, String prefix ) {
+    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, String prefix, String startDate, String endDate ) {
         List<Pair<Double>> toReturn = new ArrayList<Pair<Double>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
             setError("APIL_0100", "argument's not valid.");
@@ -887,7 +892,9 @@ public class TeaClient {
             return toReturn;
         }
 
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_prefix" };
+        String[] paramFields = {"collection_id", "target_field", "content"
+        						, "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_prefix"
+        						, "startDate", "endDate" };
         SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
@@ -898,6 +905,9 @@ public class TeaClient {
         request.setValue("value_delimiter", VALUE_DELIMITER);
         request.setValue("top_count", topN);
         request.setValue("filter_prefix", prefix);
+        
+        request.setValue("startDate", startDate);
+        request.setValue("endDate", endDate);
         
         SocketMessage response = handleMessage(request);
         if (!isSuccessful(response)) {
@@ -921,7 +931,7 @@ public class TeaClient {
      * @param targetField	field name for keyword extraction in server's configuration
      * @return wrapper object for keyword-weight pairs
      */
-    public List<Pair<Integer>> extractNerForPlainText(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix  ) {
+    public List<Pair<Integer>> extractNerForPlainText(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix, String startDate, String endDate  ) {
         List<Pair<Integer>> toReturn = new ArrayList<Pair<Integer>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
             setError("APIL_0100", "argument's not valid.");
@@ -940,7 +950,9 @@ public class TeaClient {
         	filter_docId += docList.next() + ITEM_DELIMITER;
         }
         
-        String[] paramFields = {"collection_id", "target_field", "content", "item_delimiter", "weight_delimiter", "field_delimiter", "top_count","filter_docId","filter_prefix" };
+        String[] paramFields = {"collection_id", "target_field", "content"
+        						, "item_delimiter", "weight_delimiter", "field_delimiter", "top_count","filter_docId", "filter_prefix"
+        						, "startDate", "endDate" };
         SocketMessage request = new SocketMessage("recommender", "get_named_entity", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
@@ -955,6 +967,9 @@ public class TeaClient {
         request.setValue("filter_docId", filter_docId);
         request.setValue("filter_prefix", prefix);
 
+        request.setValue("startDate", startDate);
+        request.setValue("endDate", endDate);
+        
         SocketMessage response = handleMessage(request);
         if (!isSuccessful(response)) {
             if ("".equals(response.getErrorCode())) {
@@ -970,7 +985,7 @@ public class TeaClient {
         return toReturn;
     }
     
-    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, ArrayList<String> docListForFiltering, String prefix  ) {
+    public List<Pair<Double>> getSimilarDoc(String collectionId, String content, String topN, ArrayList<String> docListForFiltering, String prefix, String startDate, String endDate  ) {
     	
     	String filter_docId = "";
     	  	
@@ -991,7 +1006,9 @@ public class TeaClient {
             return toReturn;
         }
 
-        String[] paramFields = {"collection_id", "target_field", "content", "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix" };
+        String[] paramFields = {"collection_id", "target_field", "content"
+        						, "field_delimiter", "value_delimiter", "item_delimiter", "top_count", "filter_docId", "filter_prefix"
+        						, "startDate" , "endDate" };
         SocketMessage request = new SocketMessage("recommender", "get_similar_doc", SocketMessage.PriorityType.EMERGENCY, SocketMessage.TransferType.BI_WAY, "",
                 paramFields);
         request.setValue("collection_id", collectionId);
@@ -1001,8 +1018,12 @@ public class TeaClient {
         request.setValue("value_delimiter", VALUE_DELIMITER);
         request.setValue("item_delimiter", ITEM_DELIMITER);
         request.setValue("top_count", topN);
+        
         request.setValue("filter_docId", filter_docId );
         request.setValue("filter_prefix", prefix);
+        
+        request.setValue("startDate", startDate);
+        request.setValue("endDate", endDate);
                 
         SocketMessage response = handleMessage(request);
         if (!isSuccessful(response)) {
