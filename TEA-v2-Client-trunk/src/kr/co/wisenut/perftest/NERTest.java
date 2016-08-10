@@ -75,6 +75,8 @@ public class NERTest extends AbstractJavaSamplerClient {
     /* 추천엔진 관련 파라미터 변수 */
 	private String TEA_IP;
 	private int TEA_PORT;
+	private String START_DATE;
+	private String END_DATE;
 	
 	private String COLLECTION;
 	
@@ -98,12 +100,14 @@ public class NERTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("teaip", "10.0.10.135");
-    	TEA_PORT = context.getIntParameter("teaport", 11000);
+    	TEA_IP = context.getParameter("teaip");
+    	TEA_PORT = context.getIntParameter("teaport");
+    	START_DATE = context.getParameter("startdate");
+    	END_DATE = context.getParameter("enddate");
     	
-    	COLLECTION = context.getParameter("collection", "media");
+    	COLLECTION = context.getParameter("collection");
     	
-    	CONTENTS = context.getParameter("contents", "");
+    	CONTENTS = context.getParameter("contents");
     }
     
     @Override
@@ -120,7 +124,9 @@ public class NERTest extends AbstractJavaSamplerClient {
         params.addArgument("teaip", "10.0.10.135");
         params.addArgument("teaport", String.valueOf(11000));
         params.addArgument("collection", "article");
-        params.addArgument("contents", "");
+        params.addArgument("startdate", "");
+        params.addArgument("enddate", "");
+        params.addArgument("contents", "${content}");
         return params;
     }
 
@@ -155,7 +161,7 @@ public class NERTest extends AbstractJavaSamplerClient {
 	        // 유사 기사 덩어리와 입력된 기사를 개체명 조회 메소드에 넣어서 결과를 받아옴.
 			ArrayList<String> filteringDocidList = new ArrayList<String>();
 			String prefix = "";
-	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, "10", filteringDocidList, prefix );
+	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, "10", filteringDocidList, prefix, START_DATE, END_DATE);
 	 		
 	 		StringBuffer resultSb = new StringBuffer();
 	 		resultSb.append("####################################################################").append("\n");

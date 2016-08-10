@@ -3,10 +3,8 @@ package kr.co.wisenut.perftest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 import java.util.Map;
 
-import kr.co.wisenut.common.WiseSearchWorker;
 import kr.co.wisenut.common.WiseTeaWorker;
 
 import org.apache.jmeter.config.Arguments;
@@ -16,8 +14,6 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
-
-import com.wisenut.tea20.types.Pair;
 
 /**
  * 샘플 클래스
@@ -81,6 +77,8 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 	
 	private String COLLECTION;
 	private String PREFIX;
+	private String START_DATE;
+	private String END_DATE;
 	private String DOCUMENT_FIELDS;
 	
 	private String CONTENTS;
@@ -104,17 +102,19 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("ip", "10.113.38.22");
-    	TEA_PORT = context.getIntParameter("port", 11000);
+    	TEA_IP = context.getParameter("ip");
+    	TEA_PORT = context.getIntParameter("port");
     	
-    	COLLECTION = context.getParameter("collection", "media");
-    	PREFIX = context.getParameter("prefix", "A");
+    	COLLECTION = context.getParameter("collection");
+    	PREFIX = context.getParameter("prefix");
+    	START_DATE = context.getParameter("startdate");
+    	END_DATE = context.getParameter("enddate");
     	
     	DOCUMENT_FIELDS = context.getParameter("documentFields");
     	
-    	CONTENTS = context.getParameter("contents", "");
+    	CONTENTS = context.getParameter("contents");
     	
-    	PAGE_SIZE = context.getParameter("pageSize", "10");
+    	PAGE_SIZE = context.getParameter("pageSize");
     }
     
     @Override
@@ -132,8 +132,10 @@ public class RecommendTest extends AbstractJavaSamplerClient {
         params.addArgument("port", String.valueOf(11000));
         params.addArgument("collection", "media");
         params.addArgument("prefix", "A");
-        params.addArgument("documentFields", "TITLE\\:DATE\\:CONTENT/100");
-        params.addArgument("contents", "");
+        params.addArgument("startdate", "");
+        params.addArgument("enddate", "");
+        params.addArgument("documentFields", "TITLE");
+        params.addArgument("contents", "${content}");
         params.addArgument("pageSize", "10");
         return params;
     }
@@ -171,7 +173,7 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			int totalResultCount = 0;
 			
 			// 기사 길이에 따라 모델, 모델+sf1을 구분해서 가져옴.
-    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX);
+    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX, START_DATE, END_DATE);
         	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
 
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
