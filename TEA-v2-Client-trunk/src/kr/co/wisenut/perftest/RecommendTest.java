@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.Map;
 
 import kr.co.wisenut.common.WiseTeaWorker;
+import kr.co.wisenut.util.StringUtil;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
@@ -178,9 +179,6 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
     		StringBuffer resultSb = new StringBuffer();
-    		resultSb.append("####################################################################").append("\n");
-	 		resultSb.append(CONTENTS).append("\n");
-	 		resultSb.append("####################################################################").append("\n");
 	 		
 	 		Iterator<String> docidIter = resultMap.keySet().iterator();
 	 		while ( docidIter.hasNext()	) {
@@ -196,17 +194,19 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 	 			resultSb.append("\n");	 				
 			}
 				
-			results.setSamplerData(resultSb.toString());
-			results.setBodySize(totalResultCount);
-			results.setResponseData(resultSb.toString().getBytes());
-			//}
-			
-			/******************************** TEST END *************************************/
-			
+	 		results.setResponseData(resultSb.toString(), null);
+			results.setSamplerData(CONTENTS);
+			results.setBodySize(resultSb.toString().getBytes().length);
 			results.setSuccessful(true);
+			results.setResponseMessage("OK (TotalResultCount : " + totalResultCount);
+			results.setResponseCodeOK();
+			/******************************** TEST END *************************************/
 		}catch (Exception e) {
-			getLogger().error("RecommendTest>runTest: error during sample", e);
 			results.setSuccessful(false);
+			results.setSamplerData(CONTENTS);
+			results.setBodySize(-1);
+			results.setSuccessful(false);
+			results.setResponseMessage(e.getMessage() + "\n" + StringUtil.getSStackTraceElement(e.getStackTrace()));
 		} finally {
 			results.sampleEnd();
 		}

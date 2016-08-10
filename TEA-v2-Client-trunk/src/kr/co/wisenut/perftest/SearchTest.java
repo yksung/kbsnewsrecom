@@ -3,11 +3,9 @@ package kr.co.wisenut.perftest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
-import java.util.List;
 
 import kr.co.wisenut.common.WiseSearchWorker;
-import kr.co.wisenut.common.WiseTeaWorker;
-import kr.co.wisenut.common.WiseClassifierWorker;
+import kr.co.wisenut.util.StringUtil;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
@@ -16,8 +14,6 @@ import org.apache.jmeter.samplers.SampleResult;
 import org.apache.jmeter.testelement.TestElement;
 import org.apache.jorphan.logging.LoggingManager;
 import org.apache.log.Logger;
-
-import com.wisenut.tea20.types.Pair;
 
 /**
  * 샘플 클래스
@@ -184,14 +180,23 @@ public class SearchTest extends AbstractJavaSamplerClient {
 				resultSb.append("\n\n");
 			}
 			
-			results.setSamplerData(resultSb.toString());
-			results.setResponseData(resultSb.toString().getBytes());
+			results.setResponseData(resultSb.toString(), null);
+			if(LOG.isDebugEnabled()){	
+				results.setSamplerData(QUERY);
+				results.setBodySize(resultSb.toString().getBytes().length);
+				results.setSuccessful(true);
+				results.setResponseMessage("OK");
+				results.setResponseCodeOK();
+			}
 			/******************************** TEST END *************************************/
 			
 			results.setSuccessful(true);
 		}catch (Exception e) {
-			getLogger().error("SleepTest_bak: error during sample", e);
 			results.setSuccessful(false);
+			results.setSamplerData(QUERY);
+			results.setBodySize(-1);
+			results.setSuccessful(false);
+			results.setResponseMessage(e.getMessage() + "\n" + StringUtil.getSStackTraceElement(e.getStackTrace()));
 		} finally {
 			results.sampleEnd();
 		}

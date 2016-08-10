@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 
 import kr.co.wisenut.common.WiseTeaWorker;
+import kr.co.wisenut.util.StringUtil;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
@@ -164,9 +165,6 @@ public class NERTest extends AbstractJavaSamplerClient {
 	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, "10", filteringDocidList, prefix, START_DATE, END_DATE);
 	 		
 	 		StringBuffer resultSb = new StringBuffer();
-	 		resultSb.append("####################################################################").append("\n");
-	 		resultSb.append(CONTENTS).append("\n");
-	 		resultSb.append("####################################################################").append("\n");
 	 		for (int i = 0; i < nerPairList.size(); i++) {
 				resultSb.append("- NO : " + (i+1) + "\n");
 				resultSb.append("- NER : " + nerPairList.get(i).key() + "\n");
@@ -174,15 +172,19 @@ public class NERTest extends AbstractJavaSamplerClient {
 				resultSb.append("\n\n");
 	 		}
 	 		
-	 		results.setSamplerData(resultSb.toString());
-			results.setResponseData(resultSb.toString().getBytes());
-			
-			/******************************** TEST END *************************************/
-			
+	 		results.setSamplerData(CONTENTS);
+			results.setBodySize(resultSb.toString().getBytes().length);
+			results.setResponseData(resultSb.toString(), null);
 			results.setSuccessful(true);
+			results.setResponseMessage("OK");
+		    results.setResponseCodeOK();
+			/******************************** TEST END *************************************/
 		}catch (Exception e) {
-			getLogger().error("SleepTest_bak: error during sample", e);
 			results.setSuccessful(false);
+			results.setSamplerData(CONTENTS);
+			results.setBodySize(-1);
+			results.setSuccessful(false);
+			results.setResponseMessage(e.getMessage() + "\n" + StringUtil.getSStackTraceElement(e.getStackTrace()));
 		} finally {
 			results.sampleEnd();
 		}

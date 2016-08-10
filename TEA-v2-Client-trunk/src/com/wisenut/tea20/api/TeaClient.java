@@ -853,21 +853,9 @@ public class TeaClient {
             List<Pair<Double>> similarDocumentList = Tools.getPairListDouble(keywordsString, ITEM_DELIMITER, VALUE_DELIMITER);
             List<Map<String,String>> contentMapList = Tools.getMapListString(content_field, contentString, "/", VALUE_DELIMITER, ITEM_DELIMITER);
             
-            for(int i=0; i<similarDocumentList.size() && null != contentMapList.get(i); i++){
+            for(int i=0; i<similarDocumentList.size(); i++){
             	toReturn.put(similarDocumentList.get(i).key(), contentMapList.get(i));
             }
-        	
-            //similarDocumentContentList = Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER);
-            /*List<Pair<String>> tempContentList =  Tools.getPairListString(contentString, ITEM_DELIMITER, VALUE_DELIMITER);
-        	for (int i = 0; i < tempContentList.size(); i++) {
-     			Pair<String> item = tempContentList.get(i);
-     			if (null == item) {
-     				continue;
-     			}
-     			//System.out.println( item.key() + "^" + item.value() );
-     			similarDocumentContentList.add(item);
-     		} */
-
         }
         return toReturn;
     }

@@ -407,11 +407,13 @@ public class Tools {
 		}
 		
 		// 제목111111:내용111111|제목222222:내용2222222|제목3333333:내용3333333|....|제목nnnnnnnn:내용nnnnnnn
-		StringTokenizer itemTokenizer = new StringTokenizer(contents, itemDelimiter);
-		while(itemTokenizer.hasMoreTokens()){
-			String item = itemTokenizer.nextToken();
+		String[] itemTokens = contents.split(Pattern.quote(itemDelimiter), -1);
+		for(int t=0; t<itemTokens.length; t++){
+		//StringTokenizer itemTokenizer = new StringTokenizer(contents, itemDelimiter);
+		//while(itemTokenizer.hasMoreTokens()){
+			//String item = itemTokenizer.nextToken();
 			// 빈 항목이 있어도 계산해서 array를 계산
-			String[] valuesArr = item.split(Pattern.quote(valueDelimiter), -1);
+			String[] valuesArr = itemTokens[t].split(Pattern.quote(valueDelimiter), -1);
 			
 			Map<String,String> map = new HashMap<String, String>();
 			for(int i=0; i<fieldsArr.length; i++){				

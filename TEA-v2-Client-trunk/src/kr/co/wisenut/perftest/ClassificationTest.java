@@ -5,6 +5,7 @@ import java.util.List;
 
 import kr.co.wisenut.common.WiseTeaWorker;
 import kr.co.wisenut.common.WiseClassifierWorker;
+import kr.co.wisenut.util.StringUtil;
 
 import org.apache.jmeter.config.Arguments;
 import org.apache.jmeter.protocol.java.sampler.AbstractJavaSamplerClient;
@@ -178,9 +179,6 @@ public class ClassificationTest extends AbstractJavaSamplerClient {
 			
 			// 카테고리 추천 결과를 세팅.
 			StringBuffer resultSb = new StringBuffer();
-			resultSb.append("####################################################################").append("\n");
-	 		resultSb.append(CONTENTS).append("\n");
-	 		resultSb.append("####################################################################").append("\n");
 			for(int cnt=1; cnt<=categoriesPair.size(); cnt++){
 				Pair<Double> category = categoriesPair.get(cnt-1);
 				
@@ -192,14 +190,21 @@ public class ClassificationTest extends AbstractJavaSamplerClient {
 				}
 			}
 			
-			results.setSamplerData(resultSb.toString());
-			results.setResponseData(resultSb.toString().getBytes());
+			results.setResponseData(resultSb.toString(), null);
+			results.setSamplerData(CONTENTS);
+			results.setBodySize(resultSb.toString().getBytes().length);
+			results.setSuccessful(true);
+			results.setResponseMessage("OK");
+			results.setResponseCodeOK();
 			/******************************** TEST END *************************************/
 			
 			results.setSuccessful(true);
 		}catch (Exception e) {
-			getLogger().error("SleepTest_bak: error during sample", e);
 			results.setSuccessful(false);
+			results.setSamplerData(CONTENTS);
+			results.setBodySize(-1);
+			results.setSuccessful(false);
+			results.setResponseMessage(e.getMessage() + "\n" + StringUtil.getSStackTraceElement(e.getStackTrace()));
 		} finally {
 			results.sampleEnd();
 		}
