@@ -50,12 +50,15 @@ public class WiseTeaWorker {
 	public List<Pair<Integer>> getNerPair(String collection, String article, String topN, ArrayList<String> filteringDocidList, String prefix, String startDate, String endDate) throws Exception{
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
+		article = searchField + "$!$" + article;
+		
+		List<Pair<Integer>> result = teaClient.extractNerForPlainText(collection, article, topN, filteringDocidList, prefix, startDate, endDate );
 		if(teaClient.hasError()){
 			LOGGER.error("[WiseTeaWorker>getNerPair][" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
 			throw new Exception("[" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
 		}
-		//extractNerForPlainText(String collectionId, String content, String topN, ArrayList<String> resultList, String prefix)  
-		return teaClient.extractNerForPlainText(collection, article, topN, filteringDocidList, prefix, startDate, endDate );
+
+		return result;
 	}
 	
 	public List<Pair<Double>> getRecommendedContentsPair(String type, String article, ArrayList<String> searchResultList, String startDate, String endDate) throws Exception {

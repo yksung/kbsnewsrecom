@@ -159,7 +159,7 @@ public class KeywordTest extends AbstractJavaSamplerClient {
     		StringBuffer resultSb = new StringBuffer();
 	 		
 	 		for(Pair<Integer> pair : resultList){
- 				resultSb.append("- "+pair.key()+"\t(" + pair.value() + ")\n");
+ 				resultSb.append("- "+pair.key()+"\t(" + pair.value() + ")");
 	 			resultSb.append("\n");	 				
 			}
 				

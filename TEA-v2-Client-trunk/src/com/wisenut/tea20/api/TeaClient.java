@@ -854,7 +854,9 @@ public class TeaClient {
             List<Map<String,String>> contentMapList = Tools.getMapListString(content_field, contentString, "/", VALUE_DELIMITER, ITEM_DELIMITER);
             
             for(int i=0; i<similarDocumentList.size(); i++){
-            	toReturn.put(similarDocumentList.get(i).key(), contentMapList.get(i));
+            	Map<String,String> map = contentMapList.get(i);
+            	map.put("Score", String.valueOf(similarDocumentList.get(i).value()));
+            	toReturn.put(similarDocumentList.get(i).key(), map);
             }
         }
         return toReturn;

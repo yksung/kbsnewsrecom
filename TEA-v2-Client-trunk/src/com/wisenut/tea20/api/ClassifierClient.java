@@ -236,6 +236,37 @@ public class ClassifierClient {
             return false;
         }
     }
+    
+    /**
+     * Checks whether error was occurred.
+     *
+     * @return true if last API call had some error.
+     */
+    public boolean hasError() {
+        return "".equals(recentErrorCode) ? false : true;
+    }
+    
+    /**
+     * Get the error code recently occurred.
+     *
+     * @return code
+     */
+    public String getErrorCode() {
+        String toReturn = recentErrorCode;
+
+        return toReturn;
+    }
+    
+    /**
+     * Get the error message recently occurred.
+     *
+     * @return message
+     */
+    public String getErrorMessage() {
+        String toReturn = recentErrorMessage;
+
+        return toReturn;
+    }
 
 	public static void main(String[] args){
 		ClassifierClient test = new ClassifierClient();

@@ -29,10 +29,10 @@ public class ClientTest {
 	public static final int SEARCH_TIMEOUT = 20000;
 	
     public static void main(String[] args) {
-    	test_getSimilarDoc();
+    	//test_getSimilarDoc();
     	//test_getSimilarDoc2();
     	//test_getSimilarDoc3();
-    	//test_getSimilarDocWithContent("media");
+    	test_getSimilarDocWithContent("media");
     	//test_getNer();
     	
     	System.exit(0);

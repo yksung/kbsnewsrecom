@@ -102,13 +102,13 @@ public class ClassificationTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("teaip", "10.113.38.22");
-    	TEA_PORT = context.getIntParameter("teaport", 11000);
-    	TEA_COLLECTION = context.getParameter("teacollection", "article");
+    	TEA_IP = context.getParameter("teaip");
+    	TEA_PORT = context.getIntParameter("teaport");
+    	TEA_COLLECTION = context.getParameter("teacollection");
     	
-    	CF_IP = context.getParameter("cfip", "10.113.38.22");
-    	CF_PORT = context.getIntParameter("cfport", 9000);
-    	CF_COLLECTION = context.getParameter("cfcollection", "KBS");
+    	CF_IP = context.getParameter("cfip");
+    	CF_PORT = context.getIntParameter("cfport");
+    	CF_COLLECTION = context.getParameter("cfcollection");
     	
     	CONTENTS = context.getParameter("contents", "");
     }
@@ -124,13 +124,13 @@ public class ClassificationTest extends AbstractJavaSamplerClient {
     @Override
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument("teaip", "10.113.38.22");
+        params.addArgument("teaip", "10.0.10.135");
         params.addArgument("teaport", String.valueOf(11000));
         params.addArgument("teacollection", "article");
-        params.addArgument("cfip", "10.113.38.22");
+        params.addArgument("cfip", "10.0.10.135");
         params.addArgument("cfport", String.valueOf(9000));
         params.addArgument("cfcollection", "KBS");
-        params.addArgument("contents", "");
+        params.addArgument("contents", "${contents}");
         return params;
     }
 

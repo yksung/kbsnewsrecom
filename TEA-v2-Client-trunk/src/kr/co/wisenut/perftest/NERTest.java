@@ -76,6 +76,8 @@ public class NERTest extends AbstractJavaSamplerClient {
     /* 추천엔진 관련 파라미터 변수 */
 	private String TEA_IP;
 	private int TEA_PORT;
+	private String PAGE_SIZE;
+	private String PREFIX;
 	private String START_DATE;
 	private String END_DATE;
 	
@@ -103,6 +105,8 @@ public class NERTest extends AbstractJavaSamplerClient {
 
     	TEA_IP = context.getParameter("teaip");
     	TEA_PORT = context.getIntParameter("teaport");
+    	PAGE_SIZE = context.getParameter("pagesize");
+    	PREFIX = context.getParameter("prefix");
     	START_DATE = context.getParameter("startdate");
     	END_DATE = context.getParameter("enddate");
     	
@@ -124,9 +128,11 @@ public class NERTest extends AbstractJavaSamplerClient {
         Arguments params = new Arguments();
         params.addArgument("teaip", "10.0.10.135");
         params.addArgument("teaport", String.valueOf(11000));
+        params.addArgument("pagesize", "10");
+        params.addArgument("prefix", "A");
         params.addArgument("collection", "article");
-        params.addArgument("startdate", "");
-        params.addArgument("enddate", "");
+        params.addArgument("startdate", "20160101");
+        params.addArgument("enddate", "20160630");
         params.addArgument("contents", "${content}");
         return params;
     }
@@ -161,8 +167,7 @@ public class NERTest extends AbstractJavaSamplerClient {
 	        
 	        // 유사 기사 덩어리와 입력된 기사를 개체명 조회 메소드에 넣어서 결과를 받아옴.
 			ArrayList<String> filteringDocidList = new ArrayList<String>();
-			String prefix = "";
-	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, "10", filteringDocidList, prefix, START_DATE, END_DATE);
+	 		List<Pair<Integer>> nerPairList = teaWorker.getNerPair( COLLECTION, CONTENTS, PAGE_SIZE, filteringDocidList, PREFIX, START_DATE, END_DATE);
 	 		
 	 		StringBuffer resultSb = new StringBuffer();
 	 		for (int i = 0; i < nerPairList.size(); i++) {

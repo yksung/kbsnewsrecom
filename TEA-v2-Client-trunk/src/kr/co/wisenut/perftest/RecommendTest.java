@@ -187,6 +187,7 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 	 			Map<String,String> item = resultMap.get(docid);
 	 			
 	 			Iterator<String> itemIter = item.keySet().iterator();
+	 			resultSb.append("- DOCID : " + docid + "\n");
 	 			while(itemIter.hasNext()){
 	 				String field = itemIter.next();
 	 				resultSb.append("- "+field+" : " + item.get(field) + "\n");
