@@ -166,7 +166,6 @@ public class SearchTest extends AbstractJavaSamplerClient {
 			
 			// 카테고리 추천 결과를 세팅.
 			StringBuffer resultSb = new StringBuffer();
-	 		resultSb.append("####################################################################").append("\n");
 			for(int cnt=0; cnt<resultList.size(); cnt++){
 				resultSb.append("- NO : " + (cnt+1) + "\n");
 
@@ -181,13 +180,11 @@ public class SearchTest extends AbstractJavaSamplerClient {
 			}
 			
 			results.setResponseData(resultSb.toString(), null);
-			if(LOG.isDebugEnabled()){	
-				results.setSamplerData(QUERY);
-				results.setBodySize(resultSb.toString().getBytes().length);
-				results.setSuccessful(true);
-				results.setResponseMessage("OK");
-				results.setResponseCodeOK();
-			}
+			results.setSamplerData(QUERY);
+			results.setBodySize(resultSb.toString().getBytes().length);
+			results.setSuccessful(true);
+			results.setResponseMessage("OK");
+			results.setResponseCodeOK();
 			/******************************** TEST END *************************************/
 			
 			results.setSuccessful(true);
