@@ -83,22 +83,22 @@ public class WiseTeaWorker {
 		return documentList;
 	}
 	
-	public Map<String, Map<String,String>> getRecommendedContents(String type, String article, String pageSize, ArrayList<String> searchResultList, String fieldToDisplay, String prefix, String startDate, String endDate) throws Exception {
+	public List<Map<String,String>> getRecommendedContents(String type, String article, String pageSize, ArrayList<String> searchResultList, String fieldToDisplay, String prefix, String startDate, String endDate) throws Exception {
 		TeaClient teaClient = new TeaClient(teaIP, teaPort);
 		
 		article = searchField + "$!$" + article;
 		
-		Map<String, Map<String,String>> documentMap = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, pageSize, searchResultList, prefix, startDate, endDate);
+		List<Map<String,String>> documentList = teaClient.getSimilarDocWithContent(collectionId, article, fieldToDisplay, pageSize, searchResultList, prefix, startDate, endDate);
 		
-		totalRecommendedMediaCount = documentMap.size();
-		LOGGER.info("getSimilarDocSf1 results in " + documentMap.size() + " documents.");
+		totalRecommendedMediaCount = documentList.size();
+		LOGGER.info("getSimilarDocSf1 results in " + documentList.size() + " documents.");
 		
 		if(teaClient.hasError()){
 			LOGGER.error("[WiseTeaWorker>getRecommendedContents][" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
 			throw new Exception("[" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());
 		}
 		
-		return documentMap;
+		return documentList;
 	}
 	
 	public int getTotalRecommendedMediaCount(){

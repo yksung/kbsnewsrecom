@@ -800,8 +800,8 @@ public class TeaClient {
     }
     
     //public List<Pair<Double>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, List<Pair<Double>> similarDocumentList, List<Pair<String>> similarDocumentContentList, ArrayList<String> resultList, String prefix ) {
-    public Map<String, Map<String,String>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, ArrayList<String> resultList, String prefix, String startDate, String endDate ) {
-    	Map<String, Map<String,String>> toReturn = new HashMap<String, Map<String,String>>();
+    public List<Map<String,String>> getSimilarDocWithContent(String collectionId, String content, String content_field, String topN, ArrayList<String> resultList, String prefix, String startDate, String endDate ) {
+    	List<Map<String,String>> toReturn = new ArrayList<Map<String,String>>();
         if (null == collectionId || null == content || 0 == collectionId.length() || 0 == content.length()) {
             setError("APIL_0100", "argument's not valid.");
             return toReturn;
@@ -855,8 +855,9 @@ public class TeaClient {
             
             for(int i=0; i<similarDocumentList.size(); i++){
             	Map<String,String> map = contentMapList.get(i);
+            	map.put("DOCID", similarDocumentList.get(i).key());
             	map.put("Score", String.valueOf(similarDocumentList.get(i).value()));
-            	toReturn.put(similarDocumentList.get(i).key(), map);
+            	toReturn.add(map);
             }
         }
         return toReturn;

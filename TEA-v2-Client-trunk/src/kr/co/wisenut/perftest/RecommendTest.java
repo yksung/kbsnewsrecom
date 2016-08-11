@@ -3,6 +3,7 @@ package kr.co.wisenut.perftest;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 
 import kr.co.wisenut.common.WiseTeaWorker;
@@ -170,27 +171,21 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			
 			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, COLLECTION);
 			ArrayList<String> searchResultList = new ArrayList<String>();
-			Map<String, Map<String,String>> resultMap = new HashMap<String, Map<String,String>>(); 
+			List<Map<String,String>> resultList = new ArrayList<Map<String,String>>(); 
 			int totalResultCount = 0;
 			
 			// 기사 길이에 따라 모델, 모델+sf1을 구분해서 가져옴.
-    		resultMap = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX, START_DATE, END_DATE);
+    		resultList = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX, START_DATE, END_DATE);
         	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
 
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
     		StringBuffer resultSb = new StringBuffer();
 	 		
-	 		Iterator<String> docidIter = resultMap.keySet().iterator();
-	 		while ( docidIter.hasNext()	) {
-	 			String docid = docidIter.next();
-	 			
-	 			Map<String,String> item = resultMap.get(docid);
-	 			
-	 			Iterator<String> itemIter = item.keySet().iterator();
-	 			resultSb.append("- DOCID : " + docid + "\n");
-	 			while(itemIter.hasNext()){
-	 				String field = itemIter.next();
-	 				resultSb.append("- "+field+" : " + item.get(field) + "\n");
+	 		for(Map<String,String> map: resultList){
+	 			Iterator<String> iter = map.keySet().iterator();
+	 			while(iter.hasNext()){
+	 				String field = iter.next();
+	 				resultSb.append("- "+field+" : " + map.get(field) + "\n");
 	 			}				
 	 			resultSb.append("\n");	 				
 			}
