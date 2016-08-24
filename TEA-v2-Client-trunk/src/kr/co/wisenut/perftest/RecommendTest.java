@@ -6,6 +6,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
+import kr.co.wisenut.common.WiseSearchWorker;
 import kr.co.wisenut.common.WiseTeaWorker;
 import kr.co.wisenut.util.StringUtil;
 
@@ -74,10 +75,13 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     private static final String RESULT_DATA_NAME = "ResultData";
 	
     /* 추천엔진 관련 파라미터 변수 */
+    private String SF_IP;
+    private int SF_PORT;
 	private String TEA_IP;
 	private int TEA_PORT;
 	
-	private String COLLECTION;
+	private String SF_COLLECTION;
+	private String TEA_COLLECTION;
 	private String PREFIX;
 	private String START_DATE;
 	private String END_DATE;
@@ -85,13 +89,14 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 	
 	private String CONTENTS;
 	private String PAGE_SIZE;
+	private String KEYWORD;
 	
 	/*
      * Utility method to set up all the values
      */
     private void setupValues(JavaSamplerContext context) {
     	
-    	responseMessage = context.getParameter(RESPONSE_MESSAGE_NAME, RESPONSE_MESSAGE_DEFAULT);
+    		responseMessage = context.getParameter(RESPONSE_MESSAGE_NAME, RESPONSE_MESSAGE_DEFAULT);
 
         responseCode = context.getParameter(RESPONSE_CODE_NAME, RESPONSE_CODE_DEFAULT);
 
@@ -104,19 +109,25 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 
         resultData = context.getParameter(RESULT_DATA_NAME, RESULT_DATA_DEFAULT);
 
-    	TEA_IP = context.getParameter("ip");
-    	TEA_PORT = context.getIntParameter("port");
-    	
-    	COLLECTION = context.getParameter("collection");
-    	PREFIX = context.getParameter("prefix");
-    	START_DATE = context.getParameter("startdate");
-    	END_DATE = context.getParameter("enddate");
-    	
-    	DOCUMENT_FIELDS = context.getParameter("documentFields");
-    	
-    	CONTENTS = context.getParameter("contents");
-    	
-    	PAGE_SIZE = context.getParameter("pageSize");
+	    	TEA_IP = context.getParameter("tea_ip");
+	    	TEA_PORT = context.getIntParameter("tea_port");
+	    	TEA_COLLECTION = context.getParameter("collection");
+	
+	    	SF_IP = context.getParameter("sf_ip");
+	    	SF_PORT = context.getIntParameter("sf_port");
+	    	SF_COLLECTION = context.getParameter("sf_collection");
+	    	
+	    	PREFIX = context.getParameter("prefix");
+	    	START_DATE = context.getParameter("startdate");
+	    	END_DATE = context.getParameter("enddate");
+	    	
+	    	DOCUMENT_FIELDS = context.getParameter("documentFields");
+	    	
+	    	CONTENTS = context.getParameter("contents");
+	    	
+	    	PAGE_SIZE = context.getParameter("pageSize");
+	    	
+	    	KEYWORD = context.getParameter("keyword");
     }
     
     @Override
@@ -130,9 +141,12 @@ public class RecommendTest extends AbstractJavaSamplerClient {
     @Override
     public Arguments getDefaultParameters() {
         Arguments params = new Arguments();
-        params.addArgument("ip", "10.0.10.135");
-        params.addArgument("port", String.valueOf(11000));
-        params.addArgument("collection", "media");
+        params.addArgument("tea_ip", "10.0.10.135");
+        params.addArgument("tea_port", String.valueOf(11000));
+        params.addArgument("tea_collection", "media");
+        params.addArgument("sf_ip", String.valueOf(11000));
+        params.addArgument("sf_port", String.valueOf(11000));
+        params.addArgument("sf_collection", "article");
         params.addArgument("prefix", "A");
         params.addArgument("startdate", "");
         params.addArgument("enddate", "");
@@ -167,19 +181,21 @@ public class RecommendTest extends AbstractJavaSamplerClient {
 			results.sampleStart();
 			
 			/******************************** TEST START *************************************/ 
-			
-			
-			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, COLLECTION);
-			ArrayList<String> searchResultList = new ArrayList<String>();
+			WiseTeaWorker teaWorker = new WiseTeaWorker(TEA_IP, TEA_PORT, SF_COLLECTION);
+			WiseSearchWorker searchWorker = new WiseSearchWorker(SF_IP, SF_PORT);
 			List<Map<String,String>> resultList = new ArrayList<Map<String,String>>(); 
 			int totalResultCount = 0;
 			
+			searchWorker.search(SF_COLLECTION, KEYWORD, "", 0, 10000, "", "");
+			
+			ArrayList<String> docidList = searchWorker.getDocidList();
+			
 			// 기사 길이에 따라 모델, 모델+sf1을 구분해서 가져옴.
-    		resultList = teaWorker.getRecommendedContents(COLLECTION, CONTENTS, PAGE_SIZE, searchResultList, DOCUMENT_FIELDS, PREFIX, START_DATE, END_DATE);
-        	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
+	    		resultList = teaWorker.getRecommendedContents(TEA_COLLECTION, CONTENTS, PAGE_SIZE, docidList, DOCUMENT_FIELDS, PREFIX, START_DATE, END_DATE);
+	        	totalResultCount = teaWorker.getTotalRecommendedMediaCount();
 
 			// DOCID Search에 대한 결과는 한 개이므로 첫번째 결과만 가져와서 add.
-    		StringBuffer resultSb = new StringBuffer();
+	        	StringBuffer resultSb = new StringBuffer();
 	 		
 	 		for(Map<String,String> map: resultList){
 	 			Iterator<String> iter = map.keySet().iterator();
