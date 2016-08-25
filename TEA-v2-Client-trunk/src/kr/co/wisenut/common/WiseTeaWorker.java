@@ -92,6 +92,7 @@ public class WiseTeaWorker {
 		
 		totalRecommendedMediaCount = documentList.size();
 		LOGGER.info("getSimilarDocSf1 results in " + documentList.size() + " documents.");
+		LOGGER.info(String.format("- collectionId : %s\n - type : %s\n - article : %s\n - pageSize : %s\n - searchResultList.size(): %s\n - fieldToDisplay : %s\n - prefix : %s\n - startDate : %s\n - endDate : %s", collectionId, type, article, pageSize, searchResultList.size(), fieldToDisplay, prefix, startDate, endDate ));
 		
 		if(teaClient.hasError()){
 			LOGGER.error("[WiseTeaWorker>getRecommendedContents][" + teaClient.getErrorCode()+"] " + teaClient.getErrorMessage());

@@ -12,14 +12,14 @@ import java.util.Properties;
 
 import kr.co.wisenut.util.StringUtil;
 
-import org.apache.jorphan.logging.LoggingManager;
-import org.apache.log.Logger;
+import org.apache.log4j.Logger;
+import org.apache.log4j.LogManager;
 
 import QueryAPI530.Search;
 
 public class WiseSearchWorker {
-	//private static final Logger LOGGER = LoggerFactory.getLogger(WiseSearchWorker.class);
-	private static final Logger LOGGER = LoggingManager.getLoggerForClass();
+	private static final Logger LOGGER = LogManager.getLogger(WiseSearchWorker.class);
+	//private static final Logger LOGGER = LoggingManager.getLoggerForClass();
 	
 	public static final String SPACE = " ";
     
@@ -55,7 +55,7 @@ public class WiseSearchWorker {
 	public WiseSearchWorker(String ip, int port) throws Exception{
 		searchIP = ip;
 		searchPort = port;
-		searchTimeout = 10000;
+		searchTimeout = 30 * 1000;
 				
 		sort = "RANK/DESC";
 		ranking = "basic,rpf,10000";
